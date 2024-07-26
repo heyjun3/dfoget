@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package greet.v1;
 
-option go_package = "example/gen/greet/v1;greetv1";
+option go_package = "github.com/heyjun3/dforget/services/backend/gen/greet/v1;greetv1";
 
 message GreetRequest {
     string name = 1;
