@@ -1,4 +1,4 @@
-module github.com/heyjun3/dforget/services/backend
+module github.com/heyjun3/dforget/backend
 
 go 1.22.5
 
