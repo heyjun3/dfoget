@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package api.memo.v1;
+
+option go_package = "github.com/heyjun3/dforget/backend/gen/api/memo/v1;memov1";
+
+message Memo {
+    optional string id = 1;
+    string title = 2;
+    string text = 3;
+}
+
+message RegisterMemoRequest {
+    Memo memo = 1;
+}
+
+message RegisterMemoResponse {
+    Memo memo = 1;
+}
+
+service MemoService {
+    rpc RegisterMemo(RegisterMemoRequest) returns (RegisterMemoResponse) {}
+}

@@ -12,6 +12,8 @@ import (
 
 	greetv1 "github.com/heyjun3/dforget/backend/gen/api/greet/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/greet/v1/greetv1connect"
+	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
+	"github.com/heyjun3/dforget/backend/server"
 )
 
 type GreetServer struct{}
@@ -29,9 +31,14 @@ func (s GreetServer) Greet(
 
 func main() {
 	greeter := &GreetServer{}
+	memo := &server.MemoHandler{}
 	mux := http.NewServeMux()
+
 	path, handler := greetv1connect.NewGreetServiceHandler(greeter)
 	mux.Handle(path, handler)
+	path, handler = memov1connect.NewMemoServiceHandler(memo)
+	mux.Handle(path, handler)
+
 	http.ListenAndServe(
 		"localhost:8080",
 		h2c.NewHandler(mux, &http2.Server{}),
