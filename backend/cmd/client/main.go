@@ -7,8 +7,8 @@ import (
 
 	"connectrpc.com/connect"
 
-	greetv1 "github.com/heyjun3/dforget/backend/gen/greet/v1"
-	"github.com/heyjun3/dforget/backend/gen/greet/v1/greetv1connect"
+	greetv1 "github.com/heyjun3/dforget/backend/gen/api/greet/v1"
+	"github.com/heyjun3/dforget/backend/gen/api/greet/v1/greetv1connect"
 )
 
 func main() {
