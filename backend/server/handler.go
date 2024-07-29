@@ -2,13 +2,21 @@ package server
 
 import (
 	"context"
+	"net/http"
 
 	"connectrpc.com/connect"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
+	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 )
 
 func Ptr[T any](v T) *T {
 	return &v
+}
+
+func NewMemoHandler()(*MemoHandler, string, http.Handler) {
+	memo := &MemoHandler{}
+	path, handler := memov1connect.NewMemoServiceHandler(memo)
+	return memo, path, handler
 }
 
 type MemoHandler struct{}
