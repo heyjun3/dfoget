@@ -4,6 +4,8 @@ package api.memo.v1;
 
 option go_package = "github.com/heyjun3/dforget/backend/gen/api/memo/v1;memov1";
 
+import "google/protobuf/empty.proto";
+
 message Memo {
     optional string id = 1;
     string title = 2;
@@ -13,11 +15,26 @@ message Memo {
 message RegisterMemoRequest {
     Memo memo = 1;
 }
-
 message RegisterMemoResponse {
     Memo memo = 1;
 }
 
+message GetMemoRequest {
+    google.protobuf.Empty empty = 1;
+}
+message GetMemoResponse {
+    repeated Memo memo = 1;
+}
+
+message DeleteMemoRequest {
+    repeated string id = 1;
+}
+message DeleteMemoResponse {
+    repeated string id = 1;
+}
+
 service MemoService {
+    rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {}
     rpc RegisterMemo(RegisterMemoRequest) returns (RegisterMemoResponse) {}
+    rpc DeleteMemo(DeleteMemoRequest) returns (DeleteMemoResponse) {}
 }

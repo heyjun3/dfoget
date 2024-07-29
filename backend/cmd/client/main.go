@@ -7,23 +7,23 @@ import (
 
 	"connectrpc.com/connect"
 
-	greetv1 "github.com/heyjun3/dforget/backend/gen/api/greet/v1"
-	"github.com/heyjun3/dforget/backend/gen/api/greet/v1/greetv1connect"
+	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
+	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 )
 
 func main() {
-	client := greetv1connect.NewGreetServiceClient(
+	client := memov1connect.NewMemoServiceClient(
 		http.DefaultClient,
 		"http://localhost:8080",
 		connect.WithGRPCWeb(),
 	)
-	res, err := client.Greet(
+	res, err := client.GetMemo(
 		context.Background(),
-		connect.NewRequest(&greetv1.GreetRequest{Name: "Jame"}),
+		connect.NewRequest(&memov1.GetMemoRequest{}),
 	)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println(res.Msg.Greeting)
+	log.Println(res.Msg)
 }

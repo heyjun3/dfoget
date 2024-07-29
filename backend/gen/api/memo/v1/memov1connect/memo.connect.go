@@ -33,20 +33,28 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// MemoServiceGetMemoProcedure is the fully-qualified name of the MemoService's GetMemo RPC.
+	MemoServiceGetMemoProcedure = "/api.memo.v1.MemoService/GetMemo"
 	// MemoServiceRegisterMemoProcedure is the fully-qualified name of the MemoService's RegisterMemo
 	// RPC.
 	MemoServiceRegisterMemoProcedure = "/api.memo.v1.MemoService/RegisterMemo"
+	// MemoServiceDeleteMemoProcedure is the fully-qualified name of the MemoService's DeleteMemo RPC.
+	MemoServiceDeleteMemoProcedure = "/api.memo.v1.MemoService/DeleteMemo"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
 	memoServiceServiceDescriptor            = v1.File_api_memo_v1_memo_proto.Services().ByName("MemoService")
+	memoServiceGetMemoMethodDescriptor      = memoServiceServiceDescriptor.Methods().ByName("GetMemo")
 	memoServiceRegisterMemoMethodDescriptor = memoServiceServiceDescriptor.Methods().ByName("RegisterMemo")
+	memoServiceDeleteMemoMethodDescriptor   = memoServiceServiceDescriptor.Methods().ByName("DeleteMemo")
 )
 
 // MemoServiceClient is a client for the api.memo.v1.MemoService service.
 type MemoServiceClient interface {
+	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error)
 	RegisterMemo(context.Context, *connect.Request[v1.RegisterMemoRequest]) (*connect.Response[v1.RegisterMemoResponse], error)
+	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error)
 }
 
 // NewMemoServiceClient constructs a client for the api.memo.v1.MemoService service. By default, it
@@ -59,10 +67,22 @@ type MemoServiceClient interface {
 func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) MemoServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &memoServiceClient{
+		getMemo: connect.NewClient[v1.GetMemoRequest, v1.GetMemoResponse](
+			httpClient,
+			baseURL+MemoServiceGetMemoProcedure,
+			connect.WithSchema(memoServiceGetMemoMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 		registerMemo: connect.NewClient[v1.RegisterMemoRequest, v1.RegisterMemoResponse](
 			httpClient,
 			baseURL+MemoServiceRegisterMemoProcedure,
 			connect.WithSchema(memoServiceRegisterMemoMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		deleteMemo: connect.NewClient[v1.DeleteMemoRequest, v1.DeleteMemoResponse](
+			httpClient,
+			baseURL+MemoServiceDeleteMemoProcedure,
+			connect.WithSchema(memoServiceDeleteMemoMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -70,7 +90,14 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // memoServiceClient implements MemoServiceClient.
 type memoServiceClient struct {
+	getMemo      *connect.Client[v1.GetMemoRequest, v1.GetMemoResponse]
 	registerMemo *connect.Client[v1.RegisterMemoRequest, v1.RegisterMemoResponse]
+	deleteMemo   *connect.Client[v1.DeleteMemoRequest, v1.DeleteMemoResponse]
+}
+
+// GetMemo calls api.memo.v1.MemoService.GetMemo.
+func (c *memoServiceClient) GetMemo(ctx context.Context, req *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error) {
+	return c.getMemo.CallUnary(ctx, req)
 }
 
 // RegisterMemo calls api.memo.v1.MemoService.RegisterMemo.
@@ -78,9 +105,16 @@ func (c *memoServiceClient) RegisterMemo(ctx context.Context, req *connect.Reque
 	return c.registerMemo.CallUnary(ctx, req)
 }
 
+// DeleteMemo calls api.memo.v1.MemoService.DeleteMemo.
+func (c *memoServiceClient) DeleteMemo(ctx context.Context, req *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error) {
+	return c.deleteMemo.CallUnary(ctx, req)
+}
+
 // MemoServiceHandler is an implementation of the api.memo.v1.MemoService service.
 type MemoServiceHandler interface {
+	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error)
 	RegisterMemo(context.Context, *connect.Request[v1.RegisterMemoRequest]) (*connect.Response[v1.RegisterMemoResponse], error)
+	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error)
 }
 
 // NewMemoServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -89,16 +123,32 @@ type MemoServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	memoServiceGetMemoHandler := connect.NewUnaryHandler(
+		MemoServiceGetMemoProcedure,
+		svc.GetMemo,
+		connect.WithSchema(memoServiceGetMemoMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	memoServiceRegisterMemoHandler := connect.NewUnaryHandler(
 		MemoServiceRegisterMemoProcedure,
 		svc.RegisterMemo,
 		connect.WithSchema(memoServiceRegisterMemoMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	memoServiceDeleteMemoHandler := connect.NewUnaryHandler(
+		MemoServiceDeleteMemoProcedure,
+		svc.DeleteMemo,
+		connect.WithSchema(memoServiceDeleteMemoMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/api.memo.v1.MemoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case MemoServiceGetMemoProcedure:
+			memoServiceGetMemoHandler.ServeHTTP(w, r)
 		case MemoServiceRegisterMemoProcedure:
 			memoServiceRegisterMemoHandler.ServeHTTP(w, r)
+		case MemoServiceDeleteMemoProcedure:
+			memoServiceDeleteMemoHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -108,6 +158,14 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 // UnimplementedMemoServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedMemoServiceHandler struct{}
 
+func (UnimplementedMemoServiceHandler) GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.memo.v1.MemoService.GetMemo is not implemented"))
+}
+
 func (UnimplementedMemoServiceHandler) RegisterMemo(context.Context, *connect.Request[v1.RegisterMemoRequest]) (*connect.Response[v1.RegisterMemoResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.memo.v1.MemoService.RegisterMemo is not implemented"))
+}
+
+func (UnimplementedMemoServiceHandler) DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.memo.v1.MemoService.DeleteMemo is not implemented"))
 }

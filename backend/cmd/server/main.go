@@ -39,6 +39,7 @@ func main() {
 	path, handler = memov1connect.NewMemoServiceHandler(memo)
 	mux.Handle(path, handler)
 
+
 	http.ListenAndServe(
 		"localhost:8080",
 		h2c.NewHandler(mux, &http2.Server{}),
