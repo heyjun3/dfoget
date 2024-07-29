@@ -10,9 +10,7 @@ import (
 )
 
 func main() {
-	_, path, handler := server.NewMemoHandler()
-	mux := http.NewServeMux()
-	mux.Handle(path, handler)
+	mux := server.New()
 
 	http.ListenAndServe(
 		"localhost:8080",

@@ -13,7 +13,7 @@ func Ptr[T any](v T) *T {
 	return &v
 }
 
-func NewMemoHandler()(*MemoHandler, string, http.Handler) {
+func NewMemoHandler() (*MemoHandler, string, http.Handler) {
 	memo := &MemoHandler{}
 	path, handler := memov1connect.NewMemoServiceHandler(memo)
 	return memo, path, handler
