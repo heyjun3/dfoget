@@ -25,6 +25,23 @@ func TestGetMemo(t *testing.T) {
 		srv.URL,
 	)
 
+	t.Run("run register memo", func(t *testing.T) {
+		expect := &memov1.Memo{
+			Id:    server.Ptr("id"),
+			Title: "test",
+			Text:  "test",
+		}
+
+		res, err := client.RegisterMemo(context.Background(),
+			connect.NewRequest(&memov1.RegisterMemoRequest{
+				Memo: &memov1.Memo{},
+			}),
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, expect, res.Msg.Memo)
+	})
+
 	t.Run("run get memo", func(t *testing.T) {
 		expect := []*memov1.Memo{
 			{Id: server.Ptr("test"), Title: "test title", Text: "text"},
@@ -35,5 +52,14 @@ func TestGetMemo(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, expect, res.Msg.Memo)
+	})
+
+	t.Run("run delete memo", func(t *testing.T) {
+		res, err := client.DeleteMemo(context.Background(),
+			connect.NewRequest(&memov1.DeleteMemoRequest{}),
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, []string(nil), res.Msg.Id)
 	})
 }
