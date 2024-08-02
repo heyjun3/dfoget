@@ -4,4 +4,16 @@ services:
     command: tail -f /dev/null
     volumes:
       - ./:/app
-    
+  postgres:
+    image: postgres:16.3
+    environment:
+      - POSTGRES_PASSWORD=dev
+      - POSTGRES_USER=dev
+      - POSTGRES_DB=dforget
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
