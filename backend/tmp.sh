@@ -7,3 +7,6 @@ go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
 
 # install atlas
 curl -sSf https://atlasgo.sh | sh
+
+# install latest xo version
+go install github.com/xo/xo@latest
