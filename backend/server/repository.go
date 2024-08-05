@@ -8,12 +8,6 @@ import (
 	"github.com/uptrace/bun"
 )
 
-type Memo struct {
-	ID    uuid.UUID
-	Title string
-	Text  string
-}
-
 type MemoRepository struct {
 	db *bun.DB
 }

@@ -2,6 +2,12 @@ services:
   dev:
     image: golang:1.22.5-bookworm
     command: tail -f /dev/null
+    environment:
+      - DB_USER=dev
+      - DB_PASSWORD=dev
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=dforget
     volumes:
       - ./:/app
   postgres:

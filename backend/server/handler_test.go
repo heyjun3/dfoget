@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	"github.com/google/uuid"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 	"github.com/heyjun3/dforget/backend/server"
@@ -16,7 +17,8 @@ import (
 )
 
 func TestGetMemo(t *testing.T) {
-	mux := server.New()
+	ResetModel(server.OpenDB(server.NewConfig().TESTDBDSN()))
+	mux := server.New(server.NewConfig().TESTDBDSN())
 	srv := httptest.NewServer(h2c.NewHandler(mux, &http2.Server{}))
 	defer srv.Close()
 
@@ -26,40 +28,43 @@ func TestGetMemo(t *testing.T) {
 	)
 
 	t.Run("run register memo", func(t *testing.T) {
-		expect := &memov1.Memo{
-			Id:    server.Ptr("id"),
-			Title: "test",
-			Text:  "test",
-		}
+		id, err := uuid.NewV7()
+		assert.NoError(t, err)
 
 		res, err := client.RegisterMemo(context.Background(),
 			connect.NewRequest(&memov1.RegisterMemoRequest{
-				Memo: &memov1.Memo{},
+				Memo: &memov1.Memo{
+					Id:    server.Ptr(id.String()),
+					Title: "test",
+					Text:  "test",
+				},
 			}),
 		)
 
-		assert.NoError(t, err)
-		assert.Equal(t, expect, res.Msg.Memo)
-	})
-
-	t.Run("run get memo", func(t *testing.T) {
-		expect := []*memov1.Memo{
-			{Id: server.Ptr("test"), Title: "test title", Text: "text"},
+		expect := &memov1.Memo{
+			Id:    server.Ptr(id.String()),
+			Title: "test",
+			Text:  "test",
 		}
-
-		res, err := client.GetMemo(context.Background(),
-			connect.NewRequest(&memov1.GetMemoRequest{}))
-
 		assert.NoError(t, err)
 		assert.Equal(t, expect, res.Msg.Memo)
-	})
 
-	t.Run("run delete memo", func(t *testing.T) {
-		res, err := client.DeleteMemo(context.Background(),
-			connect.NewRequest(&memov1.DeleteMemoRequest{}),
-		)
-
+		getres, err := client.GetMemo(context.Background(),
+			connect.NewRequest(&memov1.GetMemoRequest{}))
 		assert.NoError(t, err)
-		assert.Equal(t, []string(nil), res.Msg.Id)
+		assert.Equal(t, []*memov1.Memo{expect}, getres.Msg.Memo)
+
+		deleteres, err := client.DeleteMemo(context.Background(),
+			connect.NewRequest(&memov1.DeleteMemoRequest{
+				Id: []string{id.String()},
+			}),
+		)
+		assert.NoError(t, err)
+		assert.Equal(t, []string{id.String()}, deleteres.Msg.Id)
+
+		getres, err = client.GetMemo(context.Background(),
+			connect.NewRequest(&memov1.GetMemoRequest{}))
+		assert.NoError(t, err)
+		assert.Equal(t, []*memov1.Memo(nil), getres.Msg.Memo)
 	})
 }
