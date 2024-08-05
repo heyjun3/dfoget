@@ -2,6 +2,8 @@ package server_test
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -66,5 +68,26 @@ func TestGetMemo(t *testing.T) {
 			connect.NewRequest(&memov1.GetMemoRequest{}))
 		assert.NoError(t, err)
 		assert.Equal(t, []*memov1.Memo(nil), getres.Msg.Memo)
+	})
+
+	t.Run("invalid id", func(t *testing.T) {
+		id := "id"
+		res, err := client.RegisterMemo(context.Background(),
+			connect.NewRequest(&memov1.RegisterMemoRequest{
+				Memo: &memov1.Memo{
+					Id:    server.Ptr(id),
+					Title: "test",
+					Text:  "test",
+				},
+			}),
+		)
+
+		assert.Nil(t, res)
+		assert.Error(t, err)
+		fmt.Println(connect.CodeOf(err))
+		if connectErr := new(connect.Error); errors.As(err, &connectErr) {
+			fmt.Println(connectErr.Message())
+			fmt.Println(connectErr.Details())
+		}
 	})
 }

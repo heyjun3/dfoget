@@ -34,7 +34,7 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 	}
 	memo, err := NewMemo(title, text, opts...)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 	_, err = h.memoRepository.Save(context.Background(), []Memo{*memo})
 	if err != nil {
