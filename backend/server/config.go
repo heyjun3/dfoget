@@ -17,8 +17,10 @@ type DBConfig struct {
 	name     string
 }
 
-func NewConfig() Config {
-	return Config{
+type ConfigOption func(Config) Config
+
+func NewConfig(opts ...ConfigOption) Config {
+	conf := Config{
 		db: DBConfig{
 			user:     os.Getenv("DB_USER"),
 			password: os.Getenv("DB_PASSWORD"),
@@ -27,13 +29,20 @@ func NewConfig() Config {
 			name:     os.Getenv("DB_NAME"),
 		},
 	}
+	for _, opt := range opts {
+		conf = opt(conf)
+	}
+	return conf
 }
 
 func (c Config) DBDSN() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		c.db.user, c.db.password, c.db.host, c.db.port, c.db.name)
 }
-func (c Config) TESTDBDSN() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/test?sslmode=disable",
-		c.db.user, c.db.password, c.db.host, c.db.port)
+
+func WithDBName(name string) func(Config) Config {
+	return func(conf Config) Config {
+		conf.db.name = name
+		return conf
+	}
 }

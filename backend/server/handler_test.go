@@ -19,8 +19,8 @@ import (
 )
 
 func TestGetMemo(t *testing.T) {
-	ResetModel(server.OpenDB(server.NewConfig().TESTDBDSN()))
-	mux := server.New(server.NewConfig().TESTDBDSN())
+	ResetModel(server.InitDBConn(server.NewConfig(server.WithDBName("test"))))
+	mux := server.New(server.NewConfig())
 	srv := httptest.NewServer(h2c.NewHandler(mux, &http2.Server{}))
 	defer srv.Close()
 

@@ -7,7 +7,10 @@
 package server
 
 import (
+	"database/sql"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
 )
 
 // Injectors from wire.go:
@@ -16,4 +19,21 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	memoRepository := NewMemoRepository(db)
 	memoHandler := NewMemoHandler(memoRepository)
 	return memoHandler
+}
+
+func InitDBConn(conf DBConfigIF) *bun.DB {
+	db := provideOpenDB(conf)
+	return db
+}
+
+// wire.go:
+
+type DBConfigIF interface {
+	DBDSN() string
+}
+
+func provideOpenDB(conf DBConfigIF) *bun.DB {
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(conf.DBDSN())))
+	db := bun.NewDB(sqldb, pgdialect.New())
+	return db
 }

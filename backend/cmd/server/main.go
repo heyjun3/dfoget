@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	mux := server.New(server.NewConfig().DBDSN())
+	mux := server.New(server.NewConfig())
 
 	http.ListenAndServe(
 		"localhost:8080",
