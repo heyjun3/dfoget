@@ -1,6 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { createPromiseClient } from '@connectrpc/connect'
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
+import { MemoService } from "@/gen/api/memo/v1/memo_connect"
 
 const FormSchema = z.object({
   memo: z

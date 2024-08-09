@@ -11,3 +11,8 @@ plugins:
     out: gen
     # Add more plugin options here
     opt: target=ts
+inputs:
+  - git_repo: https://github.com/heyjun3/dforget
+    branch: main
+    subdir: backend
+    depth: 30
