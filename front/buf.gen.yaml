@@ -5,12 +5,15 @@ plugins:
   # This will invoke protoc-gen-es and write output to src/gen
   - local: protoc-gen-es
     out: gen
-    opt: target=ts
+    opt: 
+      - target=ts
   # This will invoke protoc-gen-connect-es
   - local: protoc-gen-connect-es
     out: gen
     # Add more plugin options here
-    opt: target=ts
+    opt:
+      - target=ts
+      - import_extension=none
 inputs:
   - git_repo: https://github.com/heyjun3/dforget
     branch: main

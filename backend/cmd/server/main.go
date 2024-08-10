@@ -7,13 +7,14 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	"github.com/heyjun3/dforget/backend/server"
+	"github.com/rs/cors"
 )
 
 func main() {
 	mux := server.New(server.NewConfig())
 
 	http.ListenAndServe(
-		"localhost:8080",
-		h2c.NewHandler(mux, &http2.Server{}),
+		"dev:8080",
+		cors.AllowAll().Handler((h2c.NewHandler(mux, &http2.Server{}))),
 	)
 }
