@@ -3,42 +3,48 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { DeleteMemoRequest, DeleteMemoResponse, GetMemoRequest, GetMemoResponse, RegisterMemoRequest, RegisterMemoResponse } from "./memo_pb";
 import { MethodKind } from "@bufbuild/protobuf";
+import {
+	DeleteMemoRequest,
+	DeleteMemoResponse,
+	GetMemoRequest,
+	GetMemoResponse,
+	RegisterMemoRequest,
+	RegisterMemoResponse,
+} from "./memo_pb";
 
 /**
  * @generated from service api.memo.v1.MemoService
  */
 export const MemoService = {
-  typeName: "api.memo.v1.MemoService",
-  methods: {
-    /**
-     * @generated from rpc api.memo.v1.MemoService.GetMemo
-     */
-    getMemo: {
-      name: "GetMemo",
-      I: GetMemoRequest,
-      O: GetMemoResponse,
-      kind: MethodKind.Unary,
-    },
-    /**
-     * @generated from rpc api.memo.v1.MemoService.RegisterMemo
-     */
-    registerMemo: {
-      name: "RegisterMemo",
-      I: RegisterMemoRequest,
-      O: RegisterMemoResponse,
-      kind: MethodKind.Unary,
-    },
-    /**
-     * @generated from rpc api.memo.v1.MemoService.DeleteMemo
-     */
-    deleteMemo: {
-      name: "DeleteMemo",
-      I: DeleteMemoRequest,
-      O: DeleteMemoResponse,
-      kind: MethodKind.Unary,
-    },
-  }
+	typeName: "api.memo.v1.MemoService",
+	methods: {
+		/**
+		 * @generated from rpc api.memo.v1.MemoService.GetMemo
+		 */
+		getMemo: {
+			name: "GetMemo",
+			I: GetMemoRequest,
+			O: GetMemoResponse,
+			kind: MethodKind.Unary,
+		},
+		/**
+		 * @generated from rpc api.memo.v1.MemoService.RegisterMemo
+		 */
+		registerMemo: {
+			name: "RegisterMemo",
+			I: RegisterMemoRequest,
+			O: RegisterMemoResponse,
+			kind: MethodKind.Unary,
+		},
+		/**
+		 * @generated from rpc api.memo.v1.MemoService.DeleteMemo
+		 */
+		deleteMemo: {
+			name: "DeleteMemo",
+			I: DeleteMemoRequest,
+			O: DeleteMemoResponse,
+			kind: MethodKind.Unary,
+		},
+	},
 } as const;
-
