@@ -6,7 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"format": "bunx @biomejs/biome format --write app hooks lib components"
 	},
 	"dependencies": {
 		"@bufbuild/buf": "^1.36.0",

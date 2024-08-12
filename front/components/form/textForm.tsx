@@ -16,10 +16,12 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { MemoService } from "@/gen/api/memo/v1/memo_connect";
 import { useClient } from "@/hooks/client";
+import React from "react";
+import { Memo } from "@/gen/api/memo/v1/memo_pb";
 
 const FormSchema = z.object({
 	id: z.string().optional(),
-  title: z.string(),
+	title: z.string(),
 	text: z
 		.string()
 		.min(0, {
@@ -30,23 +32,40 @@ const FormSchema = z.object({
 		}),
 });
 
-export function TextareaForm() {
+type TextareaForm = {
+	memo?: Memo;
+	deleteMemo?: (id?: string) => void;
+	mergeMemo: (memo?: Memo) => void;
+};
+
+export function TextareaForm({ memo, deleteMemo, mergeMemo }: TextareaForm) {
 	const client = useClient(MemoService);
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
-			id: "id",
+			id: memo?.id,
+			title: memo?.title,
+			text: memo?.text,
 		},
 	});
 
 	function onSubmit(data: z.infer<typeof FormSchema>) {
-		console.warn("onSubmit run", data);
-		client.registerMemo({
-			memo: {
-				title: data.title,
-				text: data.text,
-			},
-		});
+		(async () => {
+			const res = await client.registerMemo({
+				memo: {
+					id: data.id,
+					title: data.title,
+					text: data.text,
+				},
+			});
+			mergeMemo(res.memo);
+		})();
+	}
+	function onClick() {
+		console.warn("id", memo?.id);
+		if (deleteMemo) {
+			deleteMemo(memo?.id);
+		}
 	}
 
 	return (
@@ -65,7 +84,7 @@ export function TextareaForm() {
 						</FormItem>
 					)}
 				/>
-        <FormField
+				<FormField
 					control={form.control}
 					name="title"
 					render={({ field }) => (
@@ -99,6 +118,9 @@ export function TextareaForm() {
 					)}
 				/>
 				<Button type="submit">Submit</Button>
+				<Button className="space-x-1" type="button" onClick={onClick}>
+					Delete
+				</Button>
 			</form>
 		</Form>
 	);
