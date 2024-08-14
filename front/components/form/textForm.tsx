@@ -49,7 +49,7 @@ export function TextareaForm({ memo, deleteMemo, mergeMemo }: TextareaForm) {
 		},
 	});
 
-	function onSubmit(data: z.infer<typeof FormSchema>) {
+	const onSubmit = (data: z.infer<typeof FormSchema>) => {
 		(async () => {
 			const res = await client.registerMemo({
 				memo: {
@@ -60,13 +60,13 @@ export function TextareaForm({ memo, deleteMemo, mergeMemo }: TextareaForm) {
 			});
 			mergeMemo(res.memo);
 		})();
-	}
-	function onClick() {
+	};
+	const onClick = () => {
 		console.warn("id", memo?.id);
 		if (deleteMemo) {
 			deleteMemo(memo?.id);
 		}
-	}
+	};
 
 	return (
 		<Form {...form}>
