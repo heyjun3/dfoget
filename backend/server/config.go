@@ -6,7 +6,8 @@ import (
 )
 
 type Config struct {
-	db DBConfig
+	db   DBConfig
+	oidc OIDCConfig
 }
 
 type DBConfig struct {
@@ -15,6 +16,13 @@ type DBConfig struct {
 	host     string
 	port     string
 	name     string
+}
+
+type OIDCConfig struct {
+	redirectUri  string
+	clientId     string
+	clientSecret string
+	tokenUrl     string
 }
 
 type ConfigOption func(Config) Config
@@ -27,6 +35,12 @@ func NewConfig(opts ...ConfigOption) Config {
 			host:     os.Getenv("DB_HOST"),
 			port:     os.Getenv("DB_PORT"),
 			name:     os.Getenv("DB_NAME"),
+		},
+		oidc: OIDCConfig{
+			redirectUri:  os.Getenv("OIDC_REDIRECT_URI"),
+			clientId:     os.Getenv("OIDC_CLIENT_ID"),
+			clientSecret: os.Getenv("OIDC_CLIENT_SECRET"),
+			tokenUrl:     os.Getenv("OIDC_TOKEN_URL"),
 		},
 	}
 	for _, opt := range opts {

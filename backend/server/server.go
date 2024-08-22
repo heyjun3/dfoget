@@ -25,13 +25,13 @@ func New(conf Config) *http.ServeMux {
 			return
 		}
 		formData := url.Values{
-			"grant_type": {"authorization_code"},
-			"code": {code},
-			"redirect_uri": {"http://localhost:8080/oidc"},
-			"client_id": {"myclient"},
-			"client_secret": {"aOtFO4E9FmCB3UXq47GNg5OH8ABYM3MR"},
+			"grant_type":    {"authorization_code"},
+			"code":          {code},
+			"redirect_uri":  {conf.oidc.redirectUri},
+			"client_id":     {conf.oidc.clientId},
+			"client_secret": {conf.oidc.clientSecret},
 		}
-		req, err := http.NewRequest("POST", "http://keycloak:8080/realms/myrealm/protocol/openid-connect/token", strings.NewReader(formData.Encode()))
+		req, err := http.NewRequest("POST", conf.oidc.tokenUrl, strings.NewReader(formData.Encode()))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Println(err)
