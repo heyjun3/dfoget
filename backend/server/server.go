@@ -1,8 +1,7 @@
 package server
 
 import (
-	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
@@ -17,10 +16,11 @@ func New(conf Config) *http.ServeMux {
 	path, handler := memov1connect.NewMemoServiceHandler(memo)
 	mux.Handle(path, handler)
 	mux.HandleFunc("GET /oidc", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("request to oidc")
-		log.Println(r.URL.Query())
+		ctx := r.Context()
+		slog.InfoContext(ctx, "recieve oidc redirect")
 		code := r.URL.Query().Get("code")
 		if code == "" {
+			slog.ErrorContext(ctx, "code is empty")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -33,28 +33,22 @@ func New(conf Config) *http.ServeMux {
 		}
 		req, err := http.NewRequest("POST", conf.oidc.tokenUrl, strings.NewReader(formData.Encode()))
 		if err != nil {
+			slog.ErrorContext(ctx, err.Error())
 			w.WriteHeader(http.StatusBadRequest)
-			log.Println(err)
 			return
 		}
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		client := &http.Client{}
 		res, err := client.Do(req)
 		if err != nil {
+			slog.ErrorContext(ctx, err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
-			log.Print(err)
 			return
 		}
 		defer res.Body.Close()
 
-		body, err := io.ReadAll(res.Body)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Println(err)
-			return
-		}
-		log.Println(string(body))
-		w.WriteHeader(http.StatusOK)
+		slog.InfoContext(ctx, "oidc verified")
+		http.Redirect(w, r, "http://localhost:3000", http.StatusTemporaryRedirect)
 	})
 	return mux
 }
