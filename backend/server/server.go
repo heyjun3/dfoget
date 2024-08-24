@@ -48,7 +48,7 @@ func New(conf Config) *http.ServeMux {
 		defer res.Body.Close()
 
 		slog.InfoContext(ctx, "oidc verified")
-		http.Redirect(w, r, "http://localhost:3000", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, conf.frontEndURL, http.StatusTemporaryRedirect)
 	})
 	return mux
 }

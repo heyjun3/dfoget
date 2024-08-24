@@ -6,8 +6,9 @@ import (
 )
 
 type Config struct {
-	db   DBConfig
-	oidc OIDCConfig
+	db          DBConfig
+	oidc        OIDCConfig
+	frontEndURL string
 }
 
 type DBConfig struct {
@@ -42,6 +43,7 @@ func NewConfig(opts ...ConfigOption) Config {
 			clientSecret: os.Getenv("OIDC_CLIENT_SECRET"),
 			tokenUrl:     os.Getenv("OIDC_TOKEN_URL"),
 		},
+		frontEndURL: os.Getenv("FRONTEND_URL"),
 	}
 	for _, opt := range opts {
 		conf = opt(conf)

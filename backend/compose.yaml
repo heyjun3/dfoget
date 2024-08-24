@@ -8,6 +8,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
+      - FRONTEND_URL=http://localhost:3000
       - OIDC_REDIRECT_URI=http://localhost:8080/oidc
       - OIDC_CLIENT_ID=myclient
       - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
