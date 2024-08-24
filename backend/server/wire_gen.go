@@ -11,6 +11,7 @@ import (
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
+	"net/http"
 )
 
 // Injectors from wire.go:
@@ -21,12 +22,22 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	return memoHandler
 }
 
+func initializeOIDCHandler(conf Config) *OIDCHandler {
+	client := provideHttpClient()
+	oidcHandler := NewOIDCHandler(conf, client)
+	return oidcHandler
+}
+
 func InitDBConn(conf DBConfigIF) *bun.DB {
 	db := provideOpenDB(conf)
 	return db
 }
 
 // wire.go:
+
+func provideHttpClient() *http.Client {
+	return &http.Client{}
+}
 
 type DBConfigIF interface {
 	DBDSN() string

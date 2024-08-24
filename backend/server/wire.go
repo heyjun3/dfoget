@@ -5,6 +5,7 @@ package server
 
 import (
 	"database/sql"
+	"net/http"
 
 	"github.com/google/wire"
 	"github.com/uptrace/bun"
@@ -18,6 +19,18 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 		NewMemoHandler,
 	)
 	return nil
+}
+
+func initializeOIDCHandler(conf Config) *OIDCHandler {
+	wire.Build(
+		provideHttpClient,
+		NewOIDCHandler,
+	)
+	return nil
+}
+
+func provideHttpClient() *http.Client {
+	return &http.Client{}
 }
 
 type DBConfigIF interface {

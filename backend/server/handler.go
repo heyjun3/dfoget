@@ -2,6 +2,10 @@ package server
 
 import (
 	"context"
+	"log/slog"
+	"net/http"
+	"net/url"
+	"strings"
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
@@ -97,4 +101,51 @@ func (h MemoHandler) DeleteMemo(ctx context.Context, req *connect.Request[memov1
 		},
 	)
 	return res, nil
+}
+
+type OIDCHandler struct {
+	conf       Config
+	httpClient *http.Client
+}
+
+func NewOIDCHandler(conf Config, httpClient *http.Client) *OIDCHandler {
+	return &OIDCHandler{
+		conf:       conf,
+		httpClient: httpClient,
+	}
+}
+
+func (h OIDCHandler) recieveRedirect(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	slog.InfoContext(ctx, "recieve oidc redirect")
+	code := r.URL.Query().Get("code")
+	if code == "" {
+		slog.ErrorContext(ctx, "code is empty")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	formData := url.Values{
+		"grant_type":    {"authorization_code"},
+		"code":          {code},
+		"redirect_uri":  {h.conf.oidc.redirectUri},
+		"client_id":     {h.conf.oidc.clientId},
+		"client_secret": {h.conf.oidc.clientSecret},
+	}
+	req, err := http.NewRequest("POST", h.conf.oidc.tokenUrl, strings.NewReader(formData.Encode()))
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	res, err := h.httpClient.Do(req)
+	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer res.Body.Close()
+
+	slog.InfoContext(ctx, "oidc verified")
+	http.Redirect(w, r, h.conf.frontEndURL, http.StatusTemporaryRedirect)
 }
