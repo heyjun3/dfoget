@@ -18,7 +18,7 @@ import (
 	"golang.org/x/net/http2/h2c"
 )
 
-func TestGetMemo(t *testing.T) {
+func TestMemoHandler(t *testing.T) {
 	conf := server.NewConfig(server.WithDBName("test"))
 	ResetModel(server.InitDBConn(conf))
 	mux := server.New(conf)

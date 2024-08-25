@@ -29,7 +29,7 @@ func initializeOIDCHandler(conf Config) *OIDCHandler {
 	return nil
 }
 
-func provideHttpClient() *http.Client {
+func provideHttpClient() httpClient {
 	return &http.Client{}
 }
 

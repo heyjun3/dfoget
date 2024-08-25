@@ -23,8 +23,8 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 }
 
 func initializeOIDCHandler(conf Config) *OIDCHandler {
-	client := provideHttpClient()
-	oidcHandler := NewOIDCHandler(conf, client)
+	serverHttpClient := provideHttpClient()
+	oidcHandler := NewOIDCHandler(conf, serverHttpClient)
 	return oidcHandler
 }
 
@@ -35,7 +35,7 @@ func InitDBConn(conf DBConfigIF) *bun.DB {
 
 // wire.go:
 
-func provideHttpClient() *http.Client {
+func provideHttpClient() httpClient {
 	return &http.Client{}
 }
 

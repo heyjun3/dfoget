@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -105,13 +107,17 @@ func (h MemoHandler) DeleteMemo(ctx context.Context, req *connect.Request[memov1
 
 type OIDCHandler struct {
 	conf       Config
-	httpClient *http.Client
+	httpClient httpClient
 }
 
-func NewOIDCHandler(conf Config, httpClient *http.Client) *OIDCHandler {
+type httpClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
+func NewOIDCHandler(conf Config, client httpClient) *OIDCHandler {
 	return &OIDCHandler{
 		conf:       conf,
-		httpClient: httpClient,
+		httpClient: client,
 	}
 }
 
@@ -145,6 +151,13 @@ func (h OIDCHandler) recieveRedirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer res.Body.Close()
+
+	buf, err := io.ReadAll(res.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(string(buf))
 
 	slog.InfoContext(ctx, "oidc verified")
 	http.Redirect(w, r, h.conf.frontEndURL, http.StatusTemporaryRedirect)
