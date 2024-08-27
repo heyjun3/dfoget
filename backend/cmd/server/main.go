@@ -13,8 +13,17 @@ import (
 func main() {
 	mux := server.New(server.NewConfig())
 
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedMethods: []string{
+			http.MethodOptions,
+			http.MethodPost,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	})
 	http.ListenAndServe(
 		"dev:8080",
-		cors.AllowAll().Handler((h2c.NewHandler(mux, &http2.Server{}))),
+		c.Handler((h2c.NewHandler(mux, &http2.Server{}))),
 	)
 }

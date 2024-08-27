@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
@@ -154,11 +154,29 @@ func (h OIDCHandler) recieveRedirect(w http.ResponseWriter, r *http.Request) {
 
 	buf, err := io.ReadAll(res.Body)
 	if err != nil {
+		slog.ErrorContext(ctx, err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(string(buf))
+
+	var token OIDCToken
+	if err := json.Unmarshal(buf, &token); err != nil {
+		slog.ErrorContext(ctx, err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	cookie := &http.Cookie{
+		Name:     "dforget",
+		Value:    token.IdToken,
+		HttpOnly: true,
+		Path:     "/",
+	}
+	http.SetCookie(w, cookie)
 
 	slog.InfoContext(ctx, "oidc verified")
 	http.Redirect(w, r, h.conf.frontEndURL, http.StatusTemporaryRedirect)
+}
+
+type OIDCToken struct {
+	IdToken string `json:"id_token"`
 }
