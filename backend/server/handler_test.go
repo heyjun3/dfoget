@@ -18,6 +18,25 @@ import (
 	"golang.org/x/net/http2/h2c"
 )
 
+const (
+	cookie = ""
+)
+
+func NewSetCookieInterceptor() connect.UnaryInterceptorFunc {
+	interceptor := func(next connect.UnaryFunc) connect.UnaryFunc {
+		return connect.UnaryFunc(func(
+			ctx context.Context,
+			req connect.AnyRequest,
+		) (connect.AnyResponse, error) {
+			if req.Spec().IsClient {
+				req.Header().Set("Cookie", fmt.Sprintf("%s=%s", server.AuthCookieName, cookie))
+			}
+			return next(ctx, req)
+		})
+	}
+	return connect.UnaryInterceptorFunc(interceptor)
+}
+
 func TestMemoHandler(t *testing.T) {
 	conf := server.NewConfig(server.WithDBName("test"))
 	ResetModel(server.InitDBConn(conf))
@@ -25,9 +44,11 @@ func TestMemoHandler(t *testing.T) {
 	srv := httptest.NewServer(h2c.NewHandler(mux, &http2.Server{}))
 	defer srv.Close()
 
+	interceptors := connect.WithInterceptors(NewSetCookieInterceptor())
 	client := memov1connect.NewMemoServiceClient(
 		http.DefaultClient,
 		srv.URL,
+		interceptors,
 	)
 
 	t.Run("run register memo", func(t *testing.T) {

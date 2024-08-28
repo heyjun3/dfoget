@@ -20,7 +20,7 @@ func CheckJWTVerify() {
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, fmt.Errorf("unexpected signin method: %w", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signin method: %s", token.Header["alg"])
 		}
 		k := "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnyKst0eKVrUHWQ+b0aci9TAC6aPP6LYxNeICknWiQrozx0KWnX+Bvqm75q/SM3D1WbouMyYAy2JaAcZDqhLb5z4Nx3ZqzHzAx0QlCWJ0pYkYolyXsTVgKrp1gxHYHc2jKg+UOcNM624QK2ApBrBN4IK80Vi0dgdgbSLo3tBWpm/ZTCj7j468lSlZs+JjBFP8na8NFsZahd6hE+V37foPYBZxODeMBemnkEr6eEZ5EJK0gYlD/4bdoK52u0jGLPITLtlwOiJasTG7rVjczkoePylMANk3mHjZV/lL+raPQMGrGdvHNiOYXTlNAe1J7aELwrQIgL7GK290iCdrT0fIaQIDAQAB"
 		var d []byte
