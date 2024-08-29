@@ -24,11 +24,16 @@ type OIDCConfig struct {
 	clientId     string
 	clientSecret string
 	tokenUrl     string
+	pubkey       string
 }
 
 type ConfigOption func(Config) Config
 
 func NewConfig(opts ...ConfigOption) Config {
+	pubkey := os.Getenv("OIDC_PUBLIC_KEY")
+	if pubkey == "" {
+		panic("don't set oidc public key")
+	}
 	conf := Config{
 		db: DBConfig{
 			user:     os.Getenv("DB_USER"),
@@ -42,6 +47,7 @@ func NewConfig(opts ...ConfigOption) Config {
 			clientId:     os.Getenv("OIDC_CLIENT_ID"),
 			clientSecret: os.Getenv("OIDC_CLIENT_SECRET"),
 			tokenUrl:     os.Getenv("OIDC_TOKEN_URL"),
+			pubkey:       pubkey,
 		},
 		frontEndURL: os.Getenv("FRONTEND_URL"),
 	}

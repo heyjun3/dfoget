@@ -31,6 +31,8 @@ type MemoHandler struct {
 func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memov1.RegisterMemoRequest]) (
 	*connect.Response[memov1.RegisterMemoResponse], error,
 ) {
+	sub, err := GetSubValue(ctx)
+	slog.InfoContext(ctx, "sub", "sub", sub, "err", err)
 	id := req.Msg.Memo.Id
 	title := req.Msg.Memo.Title
 	text := req.Msg.Memo.Text

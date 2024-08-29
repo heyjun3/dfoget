@@ -46,7 +46,12 @@ func CheckJWTVerify() {
 		log.Fatal(err)
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		fmt.Println(claims)
+		fmt.Println(claims.GetAudience())
+		fmt.Println(claims.GetExpirationTime())
+		fmt.Println(claims.GetIssuedAt())
+		fmt.Println(claims.GetIssuer())
+		fmt.Println(claims.GetNotBefore())
+		fmt.Println(claims.GetSubject())
 	} else {
 		fmt.Println(err)
 	}
