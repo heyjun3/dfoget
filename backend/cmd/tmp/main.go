@@ -1,15 +1,17 @@
 package main
 
 import (
+	// "bytes"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
-	// "encoding/base64"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	"log"
 	"log/slog"
+	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -78,7 +80,10 @@ func GeneratePrivateKey(bitSize int) (*rsa.PrivateKey, error) {
 }
 
 func GeneratePublicKey(pubKey *rsa.PublicKey) ([]byte, error) {
-	pub2 := x509.MarshalPKCS1PublicKey(pubKey)
+	pub2, err := x509.MarshalPKIXPublicKey(pubKey)
+	if err != nil {
+		panic(err)
+	}
 	// var b bytes.Buffer
 
 	// b64 := base64.NewEncoder(base64.StdEncoding, &b)
@@ -86,6 +91,8 @@ func GeneratePublicKey(pubKey *rsa.PublicKey) ([]byte, error) {
 	// 	panic(err)
 	// }
 	// defer b64.Close()
+	// slog.Info("generate public key")
+	// slog.Info(b.String())
 	// return b.Bytes(), nil
 
 	pubBlock := pem.Block{
@@ -103,8 +110,18 @@ func GeneratePublicKey(pubKey *rsa.PublicKey) ([]byte, error) {
 	// pubKeyBytes := ssh.MarshalAuthorizedKey(public)
 
 	slog.Info("generate public key")
-	slog.Info(string(pubPem))
-	return pubPem, nil
+	ks := strings.Split(string(pubPem), "\n")
+	pubArr := []string{}
+	for _, k := range ks {
+		if strings.Contains(k, "-----") {
+			continue
+		}
+		pubArr = append(pubArr, k)
+	}
+	pub := strings.Join(pubArr, "")
+
+	slog.Info(pub)
+	return []byte(pub), nil
 }
 
 func CheckVerifyJWT() {
@@ -119,26 +136,27 @@ func VerifyJWT(jwtString string, pubKey string) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unexpected signin method: %s", token.Header["alg"])
 		}
-		pkey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(pubKey))
-		if err != nil {
-			panic(err)
+		// pkey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(pubKey))
+		// if err != nil {
+		// 	panic(err)
+		// }
+
+		var d []byte
+		d = make([]byte, base64.StdEncoding.EncodedLen(len([]byte(pubKey))))
+		n, _ := base64.StdEncoding.Decode(d, []byte(pubKey))
+		d = d[:n]
+
+		var parsedKey interface{}
+		var err error
+		if parsedKey, err = x509.ParsePKIXPublicKey(d); err != nil {
+			return nil, err
 		}
-		// var d []byte
-		// d = make([]byte, base64.StdEncoding.EncodedLen(len([]byte(pubKey))))
-		// n, _ := base64.StdEncoding.Decode(d, []byte(pubKey))
-		// d = d[:n]
 
-		// var parsedKey interface{}
-		// var err error
-		// if parsedKey, err = x509.ParsePKIXPublicKey(d); err != nil {
-		// 	return nil, err
-		// }
-
-		// var pkey *rsa.PublicKey
-		// var ok bool
-		// if pkey, ok = parsedKey.(*rsa.PublicKey); !ok {
-		// 	return nil, jwt.ErrNotRSAPublicKey
-		// }
+		var pkey *rsa.PublicKey
+		var ok bool
+		if pkey, ok = parsedKey.(*rsa.PublicKey); !ok {
+			return nil, jwt.ErrNotRSAPublicKey
+		}
 
 		return pkey, nil
 	})

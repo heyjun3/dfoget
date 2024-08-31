@@ -13,17 +13,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var publicKey *rsa.PublicKey
-
-func init() {
-	var err error
-	conf := NewConfig()
-	publicKey, err = NewPublicKey(conf.oidc.pubkey)
-	if err != nil {
-		panic(err)
-	}
-}
-
 const (
 	AuthCookieName = "dforget"
 )
@@ -62,7 +51,11 @@ func NewPublicKey(pubkey string) (*rsa.PublicKey, error) {
 	return pub, nil
 }
 
-func NewAuthInterceptor() connect.UnaryInterceptorFunc {
+func NewAuthInterceptor(conf Config) connect.UnaryInterceptorFunc {
+	publicKey, err := NewPublicKey(conf.oidc.pubkey)
+	if err != nil {
+		panic(err)
+	}
 	interceptor := func(next connect.UnaryFunc) connect.UnaryFunc {
 		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
 			cookie := req.Header().Get("Cookie")

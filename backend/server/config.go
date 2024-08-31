@@ -68,3 +68,9 @@ func WithDBName(name string) func(Config) Config {
 		return conf
 	}
 }
+func WithPubKey(pubKey string) func(Config) Config {
+	return func(conf Config) Config {
+		conf.oidc.pubkey = pubKey
+		return conf
+	}
+}
