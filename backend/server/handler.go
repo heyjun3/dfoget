@@ -32,7 +32,10 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 	*connect.Response[memov1.RegisterMemoResponse], error,
 ) {
 	sub, err := GetSubValue(ctx)
-	slog.InfoContext(ctx, "sub", "sub", sub, "err", err)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	id := req.Msg.Memo.Id
 	title := req.Msg.Memo.Title
 	text := req.Msg.Memo.Text
@@ -40,7 +43,7 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 	if id != nil {
 		opts = append(opts, WithID(*id))
 	}
-	memo, err := NewMemo(title, text, opts...)
+	memo, err := NewMemo(title, text, sub, opts...)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
@@ -48,6 +51,7 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 	if err != nil {
 		return nil, err
 	}
+
 	res := connect.NewResponse(
 		&memov1.RegisterMemoResponse{
 			Memo: &memov1.Memo{

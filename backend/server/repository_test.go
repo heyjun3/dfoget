@@ -22,8 +22,9 @@ func TestMemoRepository(t *testing.T) {
 
 	t.Run("save, find, and delete memo", func(t *testing.T) {
 		id, _ := uuid.NewV7()
+		userId := uuid.New()
 		memos := []server.Memo{
-			{ID: id, Title: "title", Text: "text"},
+			{ID: id, Title: "title", Text: "text", UserId: userId},
 		}
 
 		_, err := repo.Save(context.Background(), memos)
@@ -31,7 +32,7 @@ func TestMemoRepository(t *testing.T) {
 
 		memo, err := repo.Find(context.Background())
 		assert.NoError(t, err)
-		assert.Equal(t, []server.Memo{{ID: id, Title: "title", Text: "text"}}, memo)
+		assert.Equal(t, []server.Memo{{ID: id, Title: "title", Text: "text", UserId: userId}}, memo)
 
 		_, err = repo.DeleteByIds(context.Background(), []uuid.UUID{id})
 		assert.NoError(t, err)

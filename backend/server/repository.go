@@ -25,6 +25,7 @@ func (r *MemoRepository) Save(ctx context.Context, memos []Memo) ([]Memo, error)
 		Set(strings.Join([]string{
 			"title = EXCLUDED.title",
 			"text = EXCLUDED.text",
+			"user_id = EXCLUDED.user_id",
 		}, ",")).
 		Exec(ctx)
 	return memos, err
@@ -46,9 +47,10 @@ func dmToMemo(memoDM []MemoDM) []Memo {
 	memos := make([]Memo, 0, len(memoDM))
 	for _, dm := range memoDM {
 		memos = append(memos, Memo{
-			ID:    dm.ID,
-			Title: dm.Title,
-			Text:  dm.Text,
+			ID:     dm.ID,
+			UserId: dm.UserId,
+			Title:  dm.Title,
+			Text:   dm.Text,
 		})
 	}
 	return memos
@@ -58,9 +60,10 @@ func memoToDM(memos []Memo) []MemoDM {
 	dm := make([]MemoDM, 0, len(memos))
 	for _, memo := range memos {
 		dm = append(dm, MemoDM{
-			ID:    memo.ID,
-			Title: memo.Title,
-			Text:  memo.Text,
+			ID:     memo.ID,
+			UserId: memo.UserId,
+			Title:  memo.Title,
+			Text:   memo.Text,
 		})
 	}
 	return dm
