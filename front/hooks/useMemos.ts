@@ -32,7 +32,6 @@ export function useMemos() {
 	const fetchMemos = useMemo(() => {
 		return async () => {
 			const res = await client.getMemo({});
-			console.warn(res.memo);
 			setMemos(res.memo);
 			setIsLoading(false);
 		};
