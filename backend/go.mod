@@ -4,6 +4,7 @@ go 1.22.5
 
 require (
 	connectrpc.com/connect v1.16.2
+	github.com/cockroachdb/swiss v0.0.0-20240612210725-f4de07ae6964
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.6.0

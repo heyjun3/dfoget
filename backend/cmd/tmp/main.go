@@ -13,10 +13,22 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/cockroachdb/swiss"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 func main() {
+	SwissTable()
+}
+
+func SwissTable() {
+	m := swiss.New[string, string](10)
+	m.Put("test", "test")
+	v, _ := m.Get("test")
+	print(v, "\n")
+}
+
+func JwtVerify() {
 	private, public, err := GenerateRSAKey()
 	if err != nil {
 		panic(err)
