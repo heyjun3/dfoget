@@ -9,13 +9,10 @@ const url = "http://localhost:8888/realms/myrealm/protocol/openid-connect/auth?r
 
 const logger = (router: AppRouterInstance): Interceptor => {
 	const _logger: Interceptor = (next) => async (req) => {
-		console.warn(`sending message to ${req.url}`);
 		try {
 			return await next(req)
 		} catch (e) {
-			console.warn("sending message error")
 			if (e instanceof ConnectError && e.code == Code.Unauthenticated) {
-				// window.open(url, "_self")
 				router.push(url)
 			}
 			throw e
