@@ -31,15 +31,15 @@ func (r *MemoRepository) Save(ctx context.Context, memos []Memo) ([]Memo, error)
 	return memos, err
 }
 
-func (r *MemoRepository) Find(ctx context.Context) ([]Memo, error) {
+func (r *MemoRepository) Find(ctx context.Context, userId uuid.UUID) ([]Memo, error) {
 	dm := make([]MemoDM, 0)
-	err := r.db.NewSelect().Model(&dm).Scan(ctx)
+	err := r.db.NewSelect().Model(&dm).Where("user_id = ?", userId.String()).Scan(ctx)
 	return dmToMemo(dm), err
 }
 
-func (r *MemoRepository) DeleteByIds(ctx context.Context, ids []uuid.UUID) ([]uuid.UUID, error) {
+func (r *MemoRepository) DeleteByIds(ctx context.Context, userId uuid.UUID, ids []uuid.UUID) ([]uuid.UUID, error) {
 	_, err := r.db.NewDelete().Model((*MemoDM)(nil)).
-		Where("id IN (?)", bun.In(ids)).Exec(ctx)
+		Where("id IN (?)", bun.In(ids)).Where("user_id = ?", userId.String()).Exec(ctx)
 	return ids, err
 }
 

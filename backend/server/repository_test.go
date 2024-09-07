@@ -30,14 +30,14 @@ func TestMemoRepository(t *testing.T) {
 		_, err := repo.Save(context.Background(), memos)
 		assert.NoError(t, err)
 
-		memo, err := repo.Find(context.Background())
+		memo, err := repo.Find(context.Background(), userId)
 		assert.NoError(t, err)
 		assert.Equal(t, []server.Memo{{ID: id, Title: "title", Text: "text", UserId: userId}}, memo)
 
-		_, err = repo.DeleteByIds(context.Background(), []uuid.UUID{id})
+		_, err = repo.DeleteByIds(context.Background(), userId, []uuid.UUID{id})
 		assert.NoError(t, err)
 
-		memo, err = repo.Find(context.Background())
+		memo, err = repo.Find(context.Background(), userId)
 		assert.NoError(t, err)
 		assert.Equal(t, []server.Memo{}, memo)
 	})
