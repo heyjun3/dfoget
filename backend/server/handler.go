@@ -19,7 +19,7 @@ func Ptr[T any](v T) *T {
 	return &v
 }
 
-var _ memov1connect.MemoServiceHandler = MemoHandler{}
+var _ memov1connect.MemoServiceHandler = (*MemoHandler)(nil)
 
 func NewMemoHandler(memoRepository *MemoRepository) *MemoHandler {
 	return &MemoHandler{
