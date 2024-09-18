@@ -12,11 +12,14 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
+	memov1connect "github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 )
 
 func Ptr[T any](v T) *T {
 	return &v
 }
+
+var _ memov1connect.MemoServiceHandler = MemoHandler{}
 
 func NewMemoHandler(memoRepository *MemoRepository) *MemoHandler {
 	return &MemoHandler{
