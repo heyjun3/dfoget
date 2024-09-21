@@ -122,6 +122,10 @@ func (h MemoHandler) DeleteMemo(ctx context.Context, req *connect.Request[memov1
 	return res, nil
 }
 
+func (h MemoHandler) SyncMemo(ctx context.Context, stream *connect.BidiStream[memov1.SyncMemoRequest, memov1.SyncMemoResponse]) error {
+	return nil
+}
+
 type OIDCHandler struct {
 	conf       Config
 	httpClient httpClient

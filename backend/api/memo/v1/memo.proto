@@ -33,8 +33,16 @@ message DeleteMemoResponse {
     repeated string id = 1;
 }
 
+message SyncMemoRequest {
+    Memo memo = 1;
+}
+message SyncMemoResponse {
+    Memo memo = 1;
+}
+
 service MemoService {
     rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {}
     rpc RegisterMemo(RegisterMemoRequest) returns (RegisterMemoResponse) {}
     rpc DeleteMemo(DeleteMemoRequest) returns (DeleteMemoResponse) {}
+    rpc SyncMemo(stream SyncMemoRequest) returns (stream SyncMemoResponse) {}
 }
