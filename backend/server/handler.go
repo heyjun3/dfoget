@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -123,7 +125,45 @@ func (h MemoHandler) DeleteMemo(ctx context.Context, req *connect.Request[memov1
 }
 
 func (h MemoHandler) SyncMemo(ctx context.Context, stream *connect.BidiStream[memov1.SyncMemoRequest, memov1.SyncMemoResponse]) error {
-	return nil
+	for {
+		msg, err := stream.Receive()
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+		if err != nil {
+			return connect.NewError(connect.CodeInternal, fmt.Errorf("failed to receive request: %w", err))
+		}
+		sub, err := GetSubValue(ctx)
+		if err != nil {
+			return connect.NewError(connect.CodeInternal, err)
+		}
+
+		id := msg.Memo.Id
+		title := msg.Memo.Title
+		text := msg.Memo.Text
+		var opts []Option
+		if id != nil {
+			opts = append(opts, WithID(*id))
+		}
+		memo, err := NewMemo(title, text, sub, opts...)
+		if err != nil {
+			return connect.NewError(connect.CodeInvalidArgument, err)
+		}
+		_, err = h.memoRepository.Save(context.Background(), []Memo{*memo})
+		if err != nil {
+			return err
+		}
+
+		if err := stream.Send(&memov1.SyncMemoResponse{
+			Memo: &memov1.Memo{
+				Id:    Ptr(memo.ID.String()),
+				Title: memo.Title,
+				Text:  memo.Text,
+			},
+		}); err != nil {
+			return connect.NewError(connect.CodeInternal, fmt.Errorf("failed to send response: %w", err))
+		}
+	}
 }
 
 type OIDCHandler struct {
