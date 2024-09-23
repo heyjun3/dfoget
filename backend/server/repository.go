@@ -18,7 +18,8 @@ func NewMemoRepository(db *bun.DB) *MemoRepository {
 	}
 }
 
-func (r *MemoRepository) Save(ctx context.Context, memos []Memo) ([]Memo, error) {
+func (r *MemoRepository) Save(ctx context.Context, memos []Memo) (
+	[]Memo, error) {
 	dm := memoToDM(memos)
 	_, err := r.db.NewInsert().Model(&dm).
 		On("CONFLICT (id) DO UPDATE").
@@ -31,27 +32,53 @@ func (r *MemoRepository) Save(ctx context.Context, memos []Memo) ([]Memo, error)
 	return memos, err
 }
 
-func (r *MemoRepository) Find(ctx context.Context, userId uuid.UUID) ([]Memo, error) {
+func (r *MemoRepository) Find(
+	ctx context.Context, userId uuid.UUID) ([]Memo, error) {
 	dm := make([]MemoDM, 0)
-	err := r.db.NewSelect().Model(&dm).Where("user_id = ?", userId.String()).Scan(ctx)
+	err := r.db.NewSelect().
+		Model(&dm).
+		Where("user_id = ?", userId.String()).
+		Scan(ctx)
+	return dmToMemos(dm), err
+}
+
+func (r *MemoRepository) GetById(
+	ctx context.Context, userId uuid.UUID, id uuid.UUID) (
+	Memo, error) {
+	var dm MemoDM
+	err := r.db.NewSelect().
+		Model(&dm).
+		Where("user_id = ?", userId.String()).
+		Where("id = ?", id.String()).
+		Limit(1).
+		Scan(ctx)
 	return dmToMemo(dm), err
 }
 
-func (r *MemoRepository) DeleteByIds(ctx context.Context, userId uuid.UUID, ids []uuid.UUID) ([]uuid.UUID, error) {
-	_, err := r.db.NewDelete().Model((*MemoDM)(nil)).
-		Where("id IN (?)", bun.In(ids)).Where("user_id = ?", userId.String()).Exec(ctx)
+func (r *MemoRepository) DeleteByIds(
+	ctx context.Context, userId uuid.UUID, ids []uuid.UUID) (
+	[]uuid.UUID, error) {
+	_, err := r.db.NewDelete().
+		Model((*MemoDM)(nil)).
+		Where("id IN (?)", bun.In(ids)).
+		Where("user_id = ?", userId.String()).
+		Exec(ctx)
 	return ids, err
 }
 
-func dmToMemo(memoDM []MemoDM) []Memo {
+func dmToMemo(memoDM MemoDM) Memo {
+	return Memo{
+		ID:     memoDM.ID,
+		UserId: memoDM.UserId,
+		Title:  memoDM.Title,
+		Text:   memoDM.Text,
+	}
+}
+
+func dmToMemos(memoDM []MemoDM) []Memo {
 	memos := make([]Memo, 0, len(memoDM))
 	for _, dm := range memoDM {
-		memos = append(memos, Memo{
-			ID:     dm.ID,
-			UserId: dm.UserId,
-			Title:  dm.Title,
-			Text:   dm.Text,
-		})
+		memos = append(memos, dmToMemo(dm))
 	}
 	return memos
 }

@@ -18,7 +18,8 @@ func TestMemoRepository(t *testing.T) {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
 	repo := server.NewMemoRepository(db)
-	db.NewTruncateTable().Model((*server.MemoDM)(nil)).Exec(context.Background())
+	db.NewTruncateTable().
+		Model((*server.MemoDM)(nil)).Exec(context.Background())
 
 	t.Run("save, find, and delete memo", func(t *testing.T) {
 		id, _ := uuid.NewV7()
@@ -30,15 +31,26 @@ func TestMemoRepository(t *testing.T) {
 		_, err := repo.Save(context.Background(), memos)
 		assert.NoError(t, err)
 
-		memo, err := repo.Find(context.Background(), userId)
+		memos, err = repo.Find(context.Background(), userId)
 		assert.NoError(t, err)
-		assert.Equal(t, []server.Memo{{ID: id, Title: "title", Text: "text", UserId: userId}}, memo)
+		assert.Equal(t, []server.Memo{
+			{
+				ID:     id,
+				Title:  "title",
+				Text:   "text",
+				UserId: userId,
+			}}, memos)
 
-		_, err = repo.DeleteByIds(context.Background(), userId, []uuid.UUID{id})
+		memo, err := repo.GetById(context.Background(), userId, id)
+		assert.NoError(t, err)
+		assert.Equal(t, memos[0], memo)
+
+		_, err = repo.DeleteByIds(context.Background(),
+			userId, []uuid.UUID{id})
 		assert.NoError(t, err)
 
-		memo, err = repo.Find(context.Background(), userId)
+		memos, err = repo.Find(context.Background(), userId)
 		assert.NoError(t, err)
-		assert.Equal(t, []server.Memo{}, memo)
+		assert.Equal(t, []server.Memo{}, memos)
 	})
 }

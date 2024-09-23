@@ -45,14 +45,25 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 	title := req.Msg.Memo.Title
 	text := req.Msg.Memo.Text
 	var opts []Option
+	var memo Memo
 	if id != nil {
-		opts = append(opts, WithID(*id))
+		uu, err := uuid.Parse(*id)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		memo, err = h.memoRepository.GetById(ctx, sub, uu)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+	} else {
+		memoPtr, err := NewMemo(title, text, sub, opts...)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, err)
+		}
+		memo = *memoPtr
 	}
-	memo, err := NewMemo(title, text, sub, opts...)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, err)
-	}
-	_, err = h.memoRepository.Save(context.Background(), []Memo{*memo})
+
+	_, err = h.memoRepository.Save(context.Background(), []Memo{memo})
 	if err != nil {
 		return nil, err
 	}
