@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 	"github.com/heyjun3/dforget/backend/server"
@@ -33,39 +32,34 @@ func TestMemoHandler(t *testing.T) {
 	)
 
 	t.Run("run register memo", func(t *testing.T) {
-		id, err := uuid.NewV7()
-		assert.NoError(t, err)
-
 		res, err := client.RegisterMemo(context.Background(),
 			connect.NewRequest(&memov1.RegisterMemoRequest{
 				Memo: &memov1.Memo{
-					Id:    server.Ptr(id.String()),
-					Title: "test",
-					Text:  "test",
+					Title: "test title",
+					Text:  "test text",
 				},
 			}),
 		)
 
-		expect := &memov1.Memo{
-			Id:    server.Ptr(id.String()),
-			Title: "test",
-			Text:  "test",
-		}
 		assert.NoError(t, err)
-		assert.Equal(t, expect, res.Msg.Memo)
+		assert.NotNil(t, res.Msg.Memo.Id)
+		assert.Equal(t, "test title", res.Msg.Memo.Title)
+		assert.Equal(t, "test text", res.Msg.Memo.Text)
 
 		getres, err := client.GetMemo(context.Background(),
 			connect.NewRequest(&memov1.GetMemoRequest{}))
 		assert.NoError(t, err)
-		assert.Equal(t, []*memov1.Memo{expect}, getres.Msg.Memo)
+		assert.NotNil(t, getres.Msg.Memo[0].Id)
+		assert.Equal(t, "test title", getres.Msg.Memo[0].Title)
+		assert.Equal(t, "test text", getres.Msg.Memo[0].Text)
 
 		deleteres, err := client.DeleteMemo(context.Background(),
 			connect.NewRequest(&memov1.DeleteMemoRequest{
-				Id: []string{id.String()},
+				Id: []string{*res.Msg.Memo.Id},
 			}),
 		)
 		assert.NoError(t, err)
-		assert.Equal(t, []string{id.String()}, deleteres.Msg.Id)
+		assert.Equal(t, []string{*res.Msg.Memo.Id}, deleteres.Msg.Id)
 
 		getres, err = client.GetMemo(context.Background(),
 			connect.NewRequest(&memov1.GetMemoRequest{}))
