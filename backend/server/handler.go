@@ -55,6 +55,8 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 		if err != nil {
 			return nil, connect.NewError(connect.CodeNotFound, err)
 		}
+		memo.Title = title
+		memo.Text = text
 	} else {
 		memoPtr, err := NewMemo(title, text, sub, opts...)
 		if err != nil {

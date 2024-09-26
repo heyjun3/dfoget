@@ -53,6 +53,25 @@ func TestMemoHandler(t *testing.T) {
 		assert.Equal(t, "test title", getres.Msg.Memo[0].Title)
 		assert.Equal(t, "test text", getres.Msg.Memo[0].Text)
 
+		res, err = client.RegisterMemo(context.Background(),
+			connect.NewRequest(&memov1.RegisterMemoRequest{
+				Memo: &memov1.Memo{
+					Id:    getres.Msg.Memo[0].Id,
+					Title: "test title v2",
+					Text:  "test text v2",
+				},
+			}),
+		)
+		assert.NoError(t, err)
+		assert.Equal(t, "test title v2", res.Msg.Memo.Title)
+		assert.Equal(t, "test text v2", res.Msg.Memo.Text)
+
+		getres, err = client.GetMemo(context.Background(),
+			connect.NewRequest(&memov1.GetMemoRequest{}))
+		assert.NoError(t, err)
+		assert.Equal(t, "test title v2", getres.Msg.Memo[0].Title)
+		assert.Equal(t, "test text v2", getres.Msg.Memo[0].Text)
+
 		deleteres, err := client.DeleteMemo(context.Background(),
 			connect.NewRequest(&memov1.DeleteMemoRequest{
 				Id: []string{*res.Msg.Memo.Id},
