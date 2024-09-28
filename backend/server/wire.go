@@ -16,6 +16,7 @@ import (
 func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	wire.Build(
 		NewMemoRepository,
+		NewRegisterMemoService,
 		NewMemoHandler,
 	)
 	return nil

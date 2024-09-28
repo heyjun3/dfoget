@@ -18,7 +18,8 @@ import (
 
 func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	memoRepository := NewMemoRepository(db)
-	memoHandler := NewMemoHandler(memoRepository)
+	registerMemoService := NewRegisterMemoService(memoRepository)
+	memoHandler := NewMemoHandler(memoRepository, registerMemoService)
 	return memoHandler
 }
 

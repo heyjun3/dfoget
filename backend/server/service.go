@@ -10,9 +10,9 @@ type RegisterMemoService struct {
 	memoRepository *MemoRepository
 }
 
-func NewRegisterMemoService(memoRepository MemoRepository) *RegisterMemoService {
+func NewRegisterMemoService(memoRepository *MemoRepository) *RegisterMemoService {
 	return &RegisterMemoService{
-		memoRepository: &memoRepository,
+		memoRepository: memoRepository,
 	}
 }
 

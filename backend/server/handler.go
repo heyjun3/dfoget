@@ -23,14 +23,17 @@ func Ptr[T any](v T) *T {
 
 var _ memov1connect.MemoServiceHandler = (*MemoHandler)(nil)
 
-func NewMemoHandler(memoRepository *MemoRepository) *MemoHandler {
+func NewMemoHandler(memoRepository *MemoRepository,
+	registerMemoService *RegisterMemoService) *MemoHandler {
 	return &MemoHandler{
-		memoRepository: memoRepository,
+		memoRepository:      memoRepository,
+		registerMemoService: registerMemoService,
 	}
 }
 
 type MemoHandler struct {
-	memoRepository *MemoRepository
+	memoRepository      *MemoRepository
+	registerMemoService *RegisterMemoService
 }
 
 func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memov1.RegisterMemoRequest]) (
@@ -44,30 +47,9 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 	id := req.Msg.Memo.Id
 	title := req.Msg.Memo.Title
 	text := req.Msg.Memo.Text
-	var opts []Option
-	var memo Memo
-	if id != nil {
-		uu, err := uuid.Parse(*id)
-		if err != nil {
-			return nil, connect.NewError(connect.CodeNotFound, err)
-		}
-		memo, err = h.memoRepository.GetById(ctx, sub, uu)
-		if err != nil {
-			return nil, connect.NewError(connect.CodeNotFound, err)
-		}
-		memo.Title = title
-		memo.Text = text
-	} else {
-		memoPtr, err := NewMemo(title, text, sub, opts...)
-		if err != nil {
-			return nil, connect.NewError(connect.CodeInvalidArgument, err)
-		}
-		memo = *memoPtr
-	}
-
-	_, err = h.memoRepository.Save(context.Background(), []Memo{memo})
+	memo, err := h.registerMemoService.execute(ctx, sub, id, title, text)
 	if err != nil {
-		return nil, err
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	res := connect.NewResponse(
