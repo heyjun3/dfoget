@@ -136,17 +136,9 @@ func (h MemoHandler) SyncMemo(ctx context.Context, stream *connect.BidiStream[me
 		id := msg.Memo.Id
 		title := msg.Memo.Title
 		text := msg.Memo.Text
-		var opts []Option
-		if id != nil {
-			opts = append(opts, WithID(*id))
-		}
-		memo, err := NewMemo(title, text, sub, opts...)
+		memo, err := h.registerMemoService.execute(ctx, sub, id, title, text)
 		if err != nil {
-			return connect.NewError(connect.CodeInvalidArgument, err)
-		}
-		_, err = h.memoRepository.Save(context.Background(), []Memo{*memo})
-		if err != nil {
-			return err
+			return connect.NewError(connect.CodeInternal, err)
 		}
 
 		if err := stream.Send(&memov1.SyncMemoResponse{
