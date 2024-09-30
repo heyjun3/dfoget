@@ -40,8 +40,6 @@ const (
 	MemoServiceRegisterMemoProcedure = "/api.memo.v1.MemoService/RegisterMemo"
 	// MemoServiceDeleteMemoProcedure is the fully-qualified name of the MemoService's DeleteMemo RPC.
 	MemoServiceDeleteMemoProcedure = "/api.memo.v1.MemoService/DeleteMemo"
-	// MemoServiceSyncMemoProcedure is the fully-qualified name of the MemoService's SyncMemo RPC.
-	MemoServiceSyncMemoProcedure = "/api.memo.v1.MemoService/SyncMemo"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
@@ -50,7 +48,6 @@ var (
 	memoServiceGetMemoMethodDescriptor      = memoServiceServiceDescriptor.Methods().ByName("GetMemo")
 	memoServiceRegisterMemoMethodDescriptor = memoServiceServiceDescriptor.Methods().ByName("RegisterMemo")
 	memoServiceDeleteMemoMethodDescriptor   = memoServiceServiceDescriptor.Methods().ByName("DeleteMemo")
-	memoServiceSyncMemoMethodDescriptor     = memoServiceServiceDescriptor.Methods().ByName("SyncMemo")
 )
 
 // MemoServiceClient is a client for the api.memo.v1.MemoService service.
@@ -58,7 +55,6 @@ type MemoServiceClient interface {
 	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error)
 	RegisterMemo(context.Context, *connect.Request[v1.RegisterMemoRequest]) (*connect.Response[v1.RegisterMemoResponse], error)
 	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error)
-	SyncMemo(context.Context) *connect.BidiStreamForClient[v1.SyncMemoRequest, v1.SyncMemoResponse]
 }
 
 // NewMemoServiceClient constructs a client for the api.memo.v1.MemoService service. By default, it
@@ -89,12 +85,6 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(memoServiceDeleteMemoMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
-		syncMemo: connect.NewClient[v1.SyncMemoRequest, v1.SyncMemoResponse](
-			httpClient,
-			baseURL+MemoServiceSyncMemoProcedure,
-			connect.WithSchema(memoServiceSyncMemoMethodDescriptor),
-			connect.WithClientOptions(opts...),
-		),
 	}
 }
 
@@ -103,7 +93,6 @@ type memoServiceClient struct {
 	getMemo      *connect.Client[v1.GetMemoRequest, v1.GetMemoResponse]
 	registerMemo *connect.Client[v1.RegisterMemoRequest, v1.RegisterMemoResponse]
 	deleteMemo   *connect.Client[v1.DeleteMemoRequest, v1.DeleteMemoResponse]
-	syncMemo     *connect.Client[v1.SyncMemoRequest, v1.SyncMemoResponse]
 }
 
 // GetMemo calls api.memo.v1.MemoService.GetMemo.
@@ -121,17 +110,11 @@ func (c *memoServiceClient) DeleteMemo(ctx context.Context, req *connect.Request
 	return c.deleteMemo.CallUnary(ctx, req)
 }
 
-// SyncMemo calls api.memo.v1.MemoService.SyncMemo.
-func (c *memoServiceClient) SyncMemo(ctx context.Context) *connect.BidiStreamForClient[v1.SyncMemoRequest, v1.SyncMemoResponse] {
-	return c.syncMemo.CallBidiStream(ctx)
-}
-
 // MemoServiceHandler is an implementation of the api.memo.v1.MemoService service.
 type MemoServiceHandler interface {
 	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error)
 	RegisterMemo(context.Context, *connect.Request[v1.RegisterMemoRequest]) (*connect.Response[v1.RegisterMemoResponse], error)
 	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error)
-	SyncMemo(context.Context, *connect.BidiStream[v1.SyncMemoRequest, v1.SyncMemoResponse]) error
 }
 
 // NewMemoServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -158,12 +141,6 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(memoServiceDeleteMemoMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
-	memoServiceSyncMemoHandler := connect.NewBidiStreamHandler(
-		MemoServiceSyncMemoProcedure,
-		svc.SyncMemo,
-		connect.WithSchema(memoServiceSyncMemoMethodDescriptor),
-		connect.WithHandlerOptions(opts...),
-	)
 	return "/api.memo.v1.MemoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MemoServiceGetMemoProcedure:
@@ -172,8 +149,6 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 			memoServiceRegisterMemoHandler.ServeHTTP(w, r)
 		case MemoServiceDeleteMemoProcedure:
 			memoServiceDeleteMemoHandler.ServeHTTP(w, r)
-		case MemoServiceSyncMemoProcedure:
-			memoServiceSyncMemoHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -193,8 +168,4 @@ func (UnimplementedMemoServiceHandler) RegisterMemo(context.Context, *connect.Re
 
 func (UnimplementedMemoServiceHandler) DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.memo.v1.MemoService.DeleteMemo is not implemented"))
-}
-
-func (UnimplementedMemoServiceHandler) SyncMemo(context.Context, *connect.BidiStream[v1.SyncMemoRequest, v1.SyncMemoResponse]) error {
-	return connect.NewError(connect.CodeUnimplemented, errors.New("api.memo.v1.MemoService.SyncMemo is not implemented"))
 }
