@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log/slog"
-	"strings"
+	"net/http"
 
 	"connectrpc.com/connect"
 	"github.com/golang-jwt/jwt/v5"
@@ -60,22 +60,22 @@ func NewAuthInterceptor(conf Config) connect.UnaryInterceptorFunc {
 	}
 	interceptor := func(next connect.UnaryFunc) connect.UnaryFunc {
 		return connect.UnaryFunc(func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-			cookie := req.Header().Get("Cookie")
-			name, val, _ := strings.Cut(cookie, "=")
-			if name != AuthCookieName {
+			r := http.Request{Header: req.Header()}
+			cookie, err := r.Cookie(AuthCookieName)
+			if err != nil {
 				return nil, connect.NewError(
 					connect.CodeUnauthenticated,
 					fmt.Errorf("expect cookie name is %s", AuthCookieName),
 				)
 			}
-			token, err := jwt.Parse(val, func(token *jwt.Token) (interface{}, error) {
+			token, err := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 					return nil, fmt.Errorf("unexpected signin method: %s", token.Header)
 				}
 				return publicKey, nil
 			})
 			if err != nil {
-				slog.ErrorContext(ctx, err.Error())
+				slog.ErrorContext(ctx, err.Error(), "msg", "jwt parse error")
 				return nil, connect.NewError(
 					connect.CodeUnauthenticated,
 					fmt.Errorf("token isn't valid"),
@@ -93,7 +93,7 @@ func NewAuthInterceptor(conf Config) connect.UnaryInterceptorFunc {
 
 			sub, err := claims.GetSubject()
 			if err != nil {
-				slog.ErrorContext(ctx, err.Error())
+				slog.ErrorContext(ctx, err.Error(), "msg", "get subject error")
 				return nil, connect.NewError(
 					connect.CodeUnauthenticated,
 					fmt.Errorf("token isn't valid"),
