@@ -35,6 +35,9 @@ const (
 const (
 	// MemoServiceGetMemoProcedure is the fully-qualified name of the MemoService's GetMemo RPC.
 	MemoServiceGetMemoProcedure = "/api.memo.v1.MemoService/GetMemo"
+	// MemoServiceGetMemoServerStreamProcedure is the fully-qualified name of the MemoService's
+	// GetMemoServerStream RPC.
+	MemoServiceGetMemoServerStreamProcedure = "/api.memo.v1.MemoService/GetMemoServerStream"
 	// MemoServiceRegisterMemoProcedure is the fully-qualified name of the MemoService's RegisterMemo
 	// RPC.
 	MemoServiceRegisterMemoProcedure = "/api.memo.v1.MemoService/RegisterMemo"
@@ -46,16 +49,18 @@ const (
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	memoServiceServiceDescriptor            = v1.File_api_memo_v1_memo_proto.Services().ByName("MemoService")
-	memoServiceGetMemoMethodDescriptor      = memoServiceServiceDescriptor.Methods().ByName("GetMemo")
-	memoServiceRegisterMemoMethodDescriptor = memoServiceServiceDescriptor.Methods().ByName("RegisterMemo")
-	memoServiceDeleteMemoMethodDescriptor   = memoServiceServiceDescriptor.Methods().ByName("DeleteMemo")
-	memoServiceMemoStreamMethodDescriptor   = memoServiceServiceDescriptor.Methods().ByName("MemoStream")
+	memoServiceServiceDescriptor                   = v1.File_api_memo_v1_memo_proto.Services().ByName("MemoService")
+	memoServiceGetMemoMethodDescriptor             = memoServiceServiceDescriptor.Methods().ByName("GetMemo")
+	memoServiceGetMemoServerStreamMethodDescriptor = memoServiceServiceDescriptor.Methods().ByName("GetMemoServerStream")
+	memoServiceRegisterMemoMethodDescriptor        = memoServiceServiceDescriptor.Methods().ByName("RegisterMemo")
+	memoServiceDeleteMemoMethodDescriptor          = memoServiceServiceDescriptor.Methods().ByName("DeleteMemo")
+	memoServiceMemoStreamMethodDescriptor          = memoServiceServiceDescriptor.Methods().ByName("MemoStream")
 )
 
 // MemoServiceClient is a client for the api.memo.v1.MemoService service.
 type MemoServiceClient interface {
 	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error)
+	GetMemoServerStream(context.Context, *connect.Request[v1.GetMemoServerStreamRequest]) (*connect.ServerStreamForClient[v1.GetMemoServerStreamResponse], error)
 	RegisterMemo(context.Context, *connect.Request[v1.RegisterMemoRequest]) (*connect.Response[v1.RegisterMemoResponse], error)
 	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error)
 	MemoStream(context.Context) *connect.BidiStreamForClient[v1.MemoStreamRequest, v1.MemoStreamResponse]
@@ -75,6 +80,12 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			httpClient,
 			baseURL+MemoServiceGetMemoProcedure,
 			connect.WithSchema(memoServiceGetMemoMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
+		getMemoServerStream: connect.NewClient[v1.GetMemoServerStreamRequest, v1.GetMemoServerStreamResponse](
+			httpClient,
+			baseURL+MemoServiceGetMemoServerStreamProcedure,
+			connect.WithSchema(memoServiceGetMemoServerStreamMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
 		registerMemo: connect.NewClient[v1.RegisterMemoRequest, v1.RegisterMemoResponse](
@@ -100,15 +111,21 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // memoServiceClient implements MemoServiceClient.
 type memoServiceClient struct {
-	getMemo      *connect.Client[v1.GetMemoRequest, v1.GetMemoResponse]
-	registerMemo *connect.Client[v1.RegisterMemoRequest, v1.RegisterMemoResponse]
-	deleteMemo   *connect.Client[v1.DeleteMemoRequest, v1.DeleteMemoResponse]
-	memoStream   *connect.Client[v1.MemoStreamRequest, v1.MemoStreamResponse]
+	getMemo             *connect.Client[v1.GetMemoRequest, v1.GetMemoResponse]
+	getMemoServerStream *connect.Client[v1.GetMemoServerStreamRequest, v1.GetMemoServerStreamResponse]
+	registerMemo        *connect.Client[v1.RegisterMemoRequest, v1.RegisterMemoResponse]
+	deleteMemo          *connect.Client[v1.DeleteMemoRequest, v1.DeleteMemoResponse]
+	memoStream          *connect.Client[v1.MemoStreamRequest, v1.MemoStreamResponse]
 }
 
 // GetMemo calls api.memo.v1.MemoService.GetMemo.
 func (c *memoServiceClient) GetMemo(ctx context.Context, req *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error) {
 	return c.getMemo.CallUnary(ctx, req)
+}
+
+// GetMemoServerStream calls api.memo.v1.MemoService.GetMemoServerStream.
+func (c *memoServiceClient) GetMemoServerStream(ctx context.Context, req *connect.Request[v1.GetMemoServerStreamRequest]) (*connect.ServerStreamForClient[v1.GetMemoServerStreamResponse], error) {
+	return c.getMemoServerStream.CallServerStream(ctx, req)
 }
 
 // RegisterMemo calls api.memo.v1.MemoService.RegisterMemo.
@@ -129,6 +146,7 @@ func (c *memoServiceClient) MemoStream(ctx context.Context) *connect.BidiStreamF
 // MemoServiceHandler is an implementation of the api.memo.v1.MemoService service.
 type MemoServiceHandler interface {
 	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error)
+	GetMemoServerStream(context.Context, *connect.Request[v1.GetMemoServerStreamRequest], *connect.ServerStream[v1.GetMemoServerStreamResponse]) error
 	RegisterMemo(context.Context, *connect.Request[v1.RegisterMemoRequest]) (*connect.Response[v1.RegisterMemoResponse], error)
 	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[v1.DeleteMemoResponse], error)
 	MemoStream(context.Context, *connect.BidiStream[v1.MemoStreamRequest, v1.MemoStreamResponse]) error
@@ -144,6 +162,12 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 		MemoServiceGetMemoProcedure,
 		svc.GetMemo,
 		connect.WithSchema(memoServiceGetMemoMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
+	memoServiceGetMemoServerStreamHandler := connect.NewServerStreamHandler(
+		MemoServiceGetMemoServerStreamProcedure,
+		svc.GetMemoServerStream,
+		connect.WithSchema(memoServiceGetMemoServerStreamMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
 	memoServiceRegisterMemoHandler := connect.NewUnaryHandler(
@@ -168,6 +192,8 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 		switch r.URL.Path {
 		case MemoServiceGetMemoProcedure:
 			memoServiceGetMemoHandler.ServeHTTP(w, r)
+		case MemoServiceGetMemoServerStreamProcedure:
+			memoServiceGetMemoServerStreamHandler.ServeHTTP(w, r)
 		case MemoServiceRegisterMemoProcedure:
 			memoServiceRegisterMemoHandler.ServeHTTP(w, r)
 		case MemoServiceDeleteMemoProcedure:
@@ -185,6 +211,10 @@ type UnimplementedMemoServiceHandler struct{}
 
 func (UnimplementedMemoServiceHandler) GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.GetMemoResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.memo.v1.MemoService.GetMemo is not implemented"))
+}
+
+func (UnimplementedMemoServiceHandler) GetMemoServerStream(context.Context, *connect.Request[v1.GetMemoServerStreamRequest], *connect.ServerStream[v1.GetMemoServerStreamResponse]) error {
+	return connect.NewError(connect.CodeUnimplemented, errors.New("api.memo.v1.MemoService.GetMemoServerStream is not implemented"))
 }
 
 func (UnimplementedMemoServiceHandler) RegisterMemo(context.Context, *connect.Request[v1.RegisterMemoRequest]) (*connect.Response[v1.RegisterMemoResponse], error) {

@@ -2,48 +2,55 @@ syntax = "proto3";
 
 package api.memo.v1;
 
-option go_package = "github.com/heyjun3/dforget/backend/gen/api/memo/v1;memov1";
-
 import "google/protobuf/empty.proto";
 
+option go_package = "github.com/heyjun3/dforget/backend/gen/api/memo/v1;memov1";
+
 message Memo {
-    optional string id = 1;
-    string title = 2;
-    string text = 3;
+  optional string id = 1;
+  string title = 2;
+  string text = 3;
 }
 
 message RegisterMemoRequest {
-    Memo memo = 1;
+  Memo memo = 1;
 }
 message RegisterMemoResponse {
-    Memo memo = 1;
+  Memo memo = 1;
 }
 
 message GetMemoRequest {
-    google.protobuf.Empty empty = 1;
+  google.protobuf.Empty empty = 1;
 }
 message GetMemoResponse {
-    repeated Memo memo = 1;
+  repeated Memo memo = 1;
+}
+
+message GetMemoServerStreamRequest {
+  google.protobuf.Empty empty = 1;
+}
+message GetMemoServerStreamResponse {
+  repeated Memo memo = 1;
 }
 
 message DeleteMemoRequest {
-    repeated string id = 1;
+  repeated string id = 1;
 }
 message DeleteMemoResponse {
-    repeated string id = 1;
+  repeated string id = 1;
 }
 
 message MemoStreamRequest {
-    Memo memo = 1;
+  Memo memo = 1;
 }
 message MemoStreamResponse {
-    Memo memo = 1;
+  Memo memo = 1;
 }
 
-
 service MemoService {
-    rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {}
-    rpc RegisterMemo(RegisterMemoRequest) returns (RegisterMemoResponse) {}
-    rpc DeleteMemo(DeleteMemoRequest) returns (DeleteMemoResponse) {}
-    rpc MemoStream(stream MemoStreamRequest) returns (stream MemoStreamResponse) {}
+  rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {}
+  rpc GetMemoServerStream(GetMemoServerStreamRequest) returns (stream GetMemoServerStreamResponse) {}
+  rpc RegisterMemo(RegisterMemoRequest) returns (RegisterMemoResponse) {}
+  rpc DeleteMemo(DeleteMemoRequest) returns (DeleteMemoResponse) {}
+  rpc MemoStream(stream MemoStreamRequest) returns (stream MemoStreamResponse) {}
 }

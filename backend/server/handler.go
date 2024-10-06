@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
@@ -22,6 +23,21 @@ func Ptr[T any](v T) *T {
 }
 
 var _ memov1connect.MemoServiceHandler = (*MemoHandler)(nil)
+
+func memoToDTO(memo *Memo) *memov1.Memo {
+	return &memov1.Memo{
+		Id:    Ptr(memo.ID.String()),
+		Title: memo.Title,
+		Text:  memo.Text,
+	}
+}
+func memosToDTO(memos []Memo) []*memov1.Memo {
+	dto := make([]*memov1.Memo, 0, len(memos))
+	for _, memo := range memos {
+		dto = append(dto, memoToDTO(&memo))
+	}
+	return dto
+}
 
 func NewMemoHandler(memoRepository *MemoRepository,
 	registerMemoService *RegisterMemoService) *MemoHandler {
@@ -54,11 +70,7 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 
 	res := connect.NewResponse(
 		&memov1.RegisterMemoResponse{
-			Memo: &memov1.Memo{
-				Id:    Ptr(memo.ID.String()),
-				Title: memo.Title,
-				Text:  memo.Text,
-			},
+			Memo: memoToDTO(memo),
 		},
 	)
 	return res, nil
@@ -75,20 +87,35 @@ func (h MemoHandler) GetMemo(ctx context.Context, req *connect.Request[memov1.Ge
 	if err != nil {
 		return nil, err
 	}
-	var memosDTO []*memov1.Memo
-	for _, memo := range memos {
-		memosDTO = append(memosDTO, &memov1.Memo{
-			Id:    Ptr(memo.ID.String()),
-			Title: memo.Title,
-			Text:  memo.Text,
-		})
-	}
 	res := connect.NewResponse(
 		&memov1.GetMemoResponse{
-			Memo: memosDTO,
+			Memo: memosToDTO(memos),
 		},
 	)
 	return res, nil
+}
+
+func (h MemoHandler) GetMemoServerStream(
+	ctx context.Context,
+	req *connect.Request[memov1.GetMemoServerStreamRequest],
+	stream *connect.ServerStream[memov1.GetMemoServerStreamResponse],
+) error {
+	userId, err := GetSubValue(ctx)
+	if err != nil {
+		return connect.NewError(connect.CodeInternal, err)
+	}
+	for {
+		memos, err := h.memoRepository.Find(context.Background(), userId)
+		if err != nil {
+			return fmt.Errorf("failed get memos")
+		}
+		if err := stream.Send(&memov1.GetMemoServerStreamResponse{
+			Memo: memosToDTO(memos),
+		}); err != nil {
+			return err
+		}
+		time.Sleep(time.Second * 10)
+	}
 }
 
 func (h MemoHandler) DeleteMemo(ctx context.Context, req *connect.Request[memov1.DeleteMemoRequest]) (

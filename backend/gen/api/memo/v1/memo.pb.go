@@ -272,6 +272,100 @@ func (x *GetMemoResponse) GetMemo() []*Memo {
 	return nil
 }
 
+type GetMemoServerStreamRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Empty *emptypb.Empty `protobuf:"bytes,1,opt,name=empty,proto3" json:"empty,omitempty"`
+}
+
+func (x *GetMemoServerStreamRequest) Reset() {
+	*x = GetMemoServerStreamRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_memo_v1_memo_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetMemoServerStreamRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMemoServerStreamRequest) ProtoMessage() {}
+
+func (x *GetMemoServerStreamRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_memo_v1_memo_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMemoServerStreamRequest.ProtoReflect.Descriptor instead.
+func (*GetMemoServerStreamRequest) Descriptor() ([]byte, []int) {
+	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetMemoServerStreamRequest) GetEmpty() *emptypb.Empty {
+	if x != nil {
+		return x.Empty
+	}
+	return nil
+}
+
+type GetMemoServerStreamResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Memo []*Memo `protobuf:"bytes,1,rep,name=memo,proto3" json:"memo,omitempty"`
+}
+
+func (x *GetMemoServerStreamResponse) Reset() {
+	*x = GetMemoServerStreamResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_memo_v1_memo_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetMemoServerStreamResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMemoServerStreamResponse) ProtoMessage() {}
+
+func (x *GetMemoServerStreamResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_memo_v1_memo_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMemoServerStreamResponse.ProtoReflect.Descriptor instead.
+func (*GetMemoServerStreamResponse) Descriptor() ([]byte, []int) {
+	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetMemoServerStreamResponse) GetMemo() []*Memo {
+	if x != nil {
+		return x.Memo
+	}
+	return nil
+}
+
 type DeleteMemoRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -283,7 +377,7 @@ type DeleteMemoRequest struct {
 func (x *DeleteMemoRequest) Reset() {
 	*x = DeleteMemoRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_memo_v1_memo_proto_msgTypes[5]
+		mi := &file_api_memo_v1_memo_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -296,7 +390,7 @@ func (x *DeleteMemoRequest) String() string {
 func (*DeleteMemoRequest) ProtoMessage() {}
 
 func (x *DeleteMemoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_memo_v1_memo_proto_msgTypes[5]
+	mi := &file_api_memo_v1_memo_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,7 +403,7 @@ func (x *DeleteMemoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMemoRequest.ProtoReflect.Descriptor instead.
 func (*DeleteMemoRequest) Descriptor() ([]byte, []int) {
-	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{5}
+	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteMemoRequest) GetId() []string {
@@ -330,7 +424,7 @@ type DeleteMemoResponse struct {
 func (x *DeleteMemoResponse) Reset() {
 	*x = DeleteMemoResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_memo_v1_memo_proto_msgTypes[6]
+		mi := &file_api_memo_v1_memo_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -343,7 +437,7 @@ func (x *DeleteMemoResponse) String() string {
 func (*DeleteMemoResponse) ProtoMessage() {}
 
 func (x *DeleteMemoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_memo_v1_memo_proto_msgTypes[6]
+	mi := &file_api_memo_v1_memo_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -356,7 +450,7 @@ func (x *DeleteMemoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMemoResponse.ProtoReflect.Descriptor instead.
 func (*DeleteMemoResponse) Descriptor() ([]byte, []int) {
-	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{6}
+	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *DeleteMemoResponse) GetId() []string {
@@ -377,7 +471,7 @@ type MemoStreamRequest struct {
 func (x *MemoStreamRequest) Reset() {
 	*x = MemoStreamRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_memo_v1_memo_proto_msgTypes[7]
+		mi := &file_api_memo_v1_memo_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -390,7 +484,7 @@ func (x *MemoStreamRequest) String() string {
 func (*MemoStreamRequest) ProtoMessage() {}
 
 func (x *MemoStreamRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_memo_v1_memo_proto_msgTypes[7]
+	mi := &file_api_memo_v1_memo_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -403,7 +497,7 @@ func (x *MemoStreamRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemoStreamRequest.ProtoReflect.Descriptor instead.
 func (*MemoStreamRequest) Descriptor() ([]byte, []int) {
-	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{7}
+	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *MemoStreamRequest) GetMemo() *Memo {
@@ -424,7 +518,7 @@ type MemoStreamResponse struct {
 func (x *MemoStreamResponse) Reset() {
 	*x = MemoStreamResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_memo_v1_memo_proto_msgTypes[8]
+		mi := &file_api_memo_v1_memo_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -437,7 +531,7 @@ func (x *MemoStreamResponse) String() string {
 func (*MemoStreamResponse) ProtoMessage() {}
 
 func (x *MemoStreamResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_memo_v1_memo_proto_msgTypes[8]
+	mi := &file_api_memo_v1_memo_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -450,7 +544,7 @@ func (x *MemoStreamResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MemoStreamResponse.ProtoReflect.Descriptor instead.
 func (*MemoStreamResponse) Descriptor() ([]byte, []int) {
-	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{8}
+	return file_api_memo_v1_memo_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *MemoStreamResponse) GetMemo() *Memo {
@@ -487,25 +581,41 @@ var file_api_memo_v1_memo_proto_rawDesc = []byte{
 	0x0f, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
 	0x12, 0x25, 0x0a, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11,
 	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x65, 0x6d,
-	0x6f, 0x52, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x22, 0x23, 0x0a, 0x11, 0x44, 0x65, 0x6c, 0x65, 0x74,
-	0x65, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x24, 0x0a, 0x12,
-	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x02,
-	0x69, 0x64, 0x22, 0x3a, 0x0a, 0x11, 0x4d, 0x65, 0x6d, 0x6f, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x25, 0x0a, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f,
-	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x22, 0x3b,
-	0x0a, 0x12, 0x4d, 0x65, 0x6d, 0x6f, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x32, 0xd2, 0x02, 0x0a, 0x0b,
-	0x4d, 0x65, 0x6d, 0x6f, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x46, 0x0a, 0x07, 0x47,
-	0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x12, 0x1b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d,
-	0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f, 0x2e, 0x76,
-	0x31, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x12, 0x55, 0x0a, 0x0c, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4d,
+	0x6f, 0x52, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x22, 0x4a, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x4d, 0x65,
+	0x6d, 0x6f, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2c, 0x0a, 0x05, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x52, 0x05, 0x65, 0x6d,
+	0x70, 0x74, 0x79, 0x22, 0x44, 0x0a, 0x1b, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x53, 0x65,
+	0x72, 0x76, 0x65, 0x72, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x25, 0x0a, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x65, 0x6d, 0x6f, 0x52, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x22, 0x23, 0x0a, 0x11, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e,
+	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x24,
+	0x0a, 0x12, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09,
+	0x52, 0x02, 0x69, 0x64, 0x22, 0x3a, 0x0a, 0x11, 0x4d, 0x65, 0x6d, 0x6f, 0x53, 0x74, 0x72, 0x65,
+	0x61, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x25, 0x0a, 0x04, 0x6d, 0x65, 0x6d,
+	0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65,
+	0x6d, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x04, 0x6d, 0x65, 0x6d, 0x6f,
+	0x22, 0x3b, 0x0a, 0x12, 0x4d, 0x65, 0x6d, 0x6f, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x32, 0xc0, 0x03,
+	0x0a, 0x0b, 0x4d, 0x65, 0x6d, 0x6f, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x46, 0x0a,
+	0x07, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x12, 0x1b, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d,
+	0x65, 0x6d, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x6c, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f,
+	0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x27, 0x2e, 0x61,
+	0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65,
+	0x6d, 0x6f, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f,
+	0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x6f, 0x53, 0x65, 0x72, 0x76, 0x65,
+	0x72, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x00, 0x30, 0x01, 0x12, 0x55, 0x0a, 0x0c, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4d,
 	0x65, 0x6d, 0x6f, 0x12, 0x20, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f, 0x2e, 0x76,
 	0x31, 0x2e, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x4d, 0x65, 0x6d, 0x6f, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x6d, 0x65, 0x6d, 0x6f,
@@ -540,39 +650,45 @@ func file_api_memo_v1_memo_proto_rawDescGZIP() []byte {
 	return file_api_memo_v1_memo_proto_rawDescData
 }
 
-var file_api_memo_v1_memo_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_api_memo_v1_memo_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_api_memo_v1_memo_proto_goTypes = []any{
-	(*Memo)(nil),                 // 0: api.memo.v1.Memo
-	(*RegisterMemoRequest)(nil),  // 1: api.memo.v1.RegisterMemoRequest
-	(*RegisterMemoResponse)(nil), // 2: api.memo.v1.RegisterMemoResponse
-	(*GetMemoRequest)(nil),       // 3: api.memo.v1.GetMemoRequest
-	(*GetMemoResponse)(nil),      // 4: api.memo.v1.GetMemoResponse
-	(*DeleteMemoRequest)(nil),    // 5: api.memo.v1.DeleteMemoRequest
-	(*DeleteMemoResponse)(nil),   // 6: api.memo.v1.DeleteMemoResponse
-	(*MemoStreamRequest)(nil),    // 7: api.memo.v1.MemoStreamRequest
-	(*MemoStreamResponse)(nil),   // 8: api.memo.v1.MemoStreamResponse
-	(*emptypb.Empty)(nil),        // 9: google.protobuf.Empty
+	(*Memo)(nil),                        // 0: api.memo.v1.Memo
+	(*RegisterMemoRequest)(nil),         // 1: api.memo.v1.RegisterMemoRequest
+	(*RegisterMemoResponse)(nil),        // 2: api.memo.v1.RegisterMemoResponse
+	(*GetMemoRequest)(nil),              // 3: api.memo.v1.GetMemoRequest
+	(*GetMemoResponse)(nil),             // 4: api.memo.v1.GetMemoResponse
+	(*GetMemoServerStreamRequest)(nil),  // 5: api.memo.v1.GetMemoServerStreamRequest
+	(*GetMemoServerStreamResponse)(nil), // 6: api.memo.v1.GetMemoServerStreamResponse
+	(*DeleteMemoRequest)(nil),           // 7: api.memo.v1.DeleteMemoRequest
+	(*DeleteMemoResponse)(nil),          // 8: api.memo.v1.DeleteMemoResponse
+	(*MemoStreamRequest)(nil),           // 9: api.memo.v1.MemoStreamRequest
+	(*MemoStreamResponse)(nil),          // 10: api.memo.v1.MemoStreamResponse
+	(*emptypb.Empty)(nil),               // 11: google.protobuf.Empty
 }
 var file_api_memo_v1_memo_proto_depIdxs = []int32{
 	0,  // 0: api.memo.v1.RegisterMemoRequest.memo:type_name -> api.memo.v1.Memo
 	0,  // 1: api.memo.v1.RegisterMemoResponse.memo:type_name -> api.memo.v1.Memo
-	9,  // 2: api.memo.v1.GetMemoRequest.empty:type_name -> google.protobuf.Empty
+	11, // 2: api.memo.v1.GetMemoRequest.empty:type_name -> google.protobuf.Empty
 	0,  // 3: api.memo.v1.GetMemoResponse.memo:type_name -> api.memo.v1.Memo
-	0,  // 4: api.memo.v1.MemoStreamRequest.memo:type_name -> api.memo.v1.Memo
-	0,  // 5: api.memo.v1.MemoStreamResponse.memo:type_name -> api.memo.v1.Memo
-	3,  // 6: api.memo.v1.MemoService.GetMemo:input_type -> api.memo.v1.GetMemoRequest
-	1,  // 7: api.memo.v1.MemoService.RegisterMemo:input_type -> api.memo.v1.RegisterMemoRequest
-	5,  // 8: api.memo.v1.MemoService.DeleteMemo:input_type -> api.memo.v1.DeleteMemoRequest
-	7,  // 9: api.memo.v1.MemoService.MemoStream:input_type -> api.memo.v1.MemoStreamRequest
-	4,  // 10: api.memo.v1.MemoService.GetMemo:output_type -> api.memo.v1.GetMemoResponse
-	2,  // 11: api.memo.v1.MemoService.RegisterMemo:output_type -> api.memo.v1.RegisterMemoResponse
-	6,  // 12: api.memo.v1.MemoService.DeleteMemo:output_type -> api.memo.v1.DeleteMemoResponse
-	8,  // 13: api.memo.v1.MemoService.MemoStream:output_type -> api.memo.v1.MemoStreamResponse
-	10, // [10:14] is the sub-list for method output_type
-	6,  // [6:10] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	11, // 4: api.memo.v1.GetMemoServerStreamRequest.empty:type_name -> google.protobuf.Empty
+	0,  // 5: api.memo.v1.GetMemoServerStreamResponse.memo:type_name -> api.memo.v1.Memo
+	0,  // 6: api.memo.v1.MemoStreamRequest.memo:type_name -> api.memo.v1.Memo
+	0,  // 7: api.memo.v1.MemoStreamResponse.memo:type_name -> api.memo.v1.Memo
+	3,  // 8: api.memo.v1.MemoService.GetMemo:input_type -> api.memo.v1.GetMemoRequest
+	5,  // 9: api.memo.v1.MemoService.GetMemoServerStream:input_type -> api.memo.v1.GetMemoServerStreamRequest
+	1,  // 10: api.memo.v1.MemoService.RegisterMemo:input_type -> api.memo.v1.RegisterMemoRequest
+	7,  // 11: api.memo.v1.MemoService.DeleteMemo:input_type -> api.memo.v1.DeleteMemoRequest
+	9,  // 12: api.memo.v1.MemoService.MemoStream:input_type -> api.memo.v1.MemoStreamRequest
+	4,  // 13: api.memo.v1.MemoService.GetMemo:output_type -> api.memo.v1.GetMemoResponse
+	6,  // 14: api.memo.v1.MemoService.GetMemoServerStream:output_type -> api.memo.v1.GetMemoServerStreamResponse
+	2,  // 15: api.memo.v1.MemoService.RegisterMemo:output_type -> api.memo.v1.RegisterMemoResponse
+	8,  // 16: api.memo.v1.MemoService.DeleteMemo:output_type -> api.memo.v1.DeleteMemoResponse
+	10, // 17: api.memo.v1.MemoService.MemoStream:output_type -> api.memo.v1.MemoStreamResponse
+	13, // [13:18] is the sub-list for method output_type
+	8,  // [8:13] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_api_memo_v1_memo_proto_init() }
@@ -642,7 +758,7 @@ func file_api_memo_v1_memo_proto_init() {
 			}
 		}
 		file_api_memo_v1_memo_proto_msgTypes[5].Exporter = func(v any, i int) any {
-			switch v := v.(*DeleteMemoRequest); i {
+			switch v := v.(*GetMemoServerStreamRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -654,7 +770,7 @@ func file_api_memo_v1_memo_proto_init() {
 			}
 		}
 		file_api_memo_v1_memo_proto_msgTypes[6].Exporter = func(v any, i int) any {
-			switch v := v.(*DeleteMemoResponse); i {
+			switch v := v.(*GetMemoServerStreamResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -666,7 +782,7 @@ func file_api_memo_v1_memo_proto_init() {
 			}
 		}
 		file_api_memo_v1_memo_proto_msgTypes[7].Exporter = func(v any, i int) any {
-			switch v := v.(*MemoStreamRequest); i {
+			switch v := v.(*DeleteMemoRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -678,6 +794,30 @@ func file_api_memo_v1_memo_proto_init() {
 			}
 		}
 		file_api_memo_v1_memo_proto_msgTypes[8].Exporter = func(v any, i int) any {
+			switch v := v.(*DeleteMemoResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_memo_v1_memo_proto_msgTypes[9].Exporter = func(v any, i int) any {
+			switch v := v.(*MemoStreamRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_memo_v1_memo_proto_msgTypes[10].Exporter = func(v any, i int) any {
 			switch v := v.(*MemoStreamResponse); i {
 			case 0:
 				return &v.state
@@ -697,7 +837,7 @@ func file_api_memo_v1_memo_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_memo_v1_memo_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
