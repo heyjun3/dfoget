@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { MemoService } from "@/gen/api/memo/v1/memo_connect";
 import { useClient } from "@/hooks/client";
 import React from "react";
-import { Memo } from "@/gen/api/memo/v1/memo_pb";
+import { MemoType } from "@/hooks/useMemos";
 
 const FormSchema = z.object({
 	id: z.string().optional(),
@@ -33,9 +33,9 @@ const FormSchema = z.object({
 });
 
 type TextareaForm = {
-	memo?: Memo;
+	memo?: MemoType;
 	deleteMemo?: (id?: string) => void;
-	mergeMemo: (memo?: Memo) => void;
+	mergeMemo: (memo?: MemoType) => void;
 };
 
 export function TextareaForm({ memo, deleteMemo, mergeMemo }: TextareaForm) {
@@ -104,7 +104,7 @@ export function TextareaForm({ memo, deleteMemo, mergeMemo }: TextareaForm) {
 				<FormField
 					control={form.control}
 					name="text"
-					render={({ field }) => (
+					render={({ field, fieldState }) => (
 						<FormItem>
 							<FormControl>
 								<Textarea

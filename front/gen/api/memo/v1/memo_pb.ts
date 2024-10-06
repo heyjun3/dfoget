@@ -204,6 +204,80 @@ export class GetMemoResponse extends Message<GetMemoResponse> {
 }
 
 /**
+ * @generated from message api.memo.v1.GetMemoServerStreamRequest
+ */
+export class GetMemoServerStreamRequest extends Message<GetMemoServerStreamRequest> {
+  /**
+   * @generated from field: google.protobuf.Empty empty = 1;
+   */
+  empty?: Empty;
+
+  constructor(data?: PartialMessage<GetMemoServerStreamRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.memo.v1.GetMemoServerStreamRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "empty", kind: "message", T: Empty },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetMemoServerStreamRequest {
+    return new GetMemoServerStreamRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetMemoServerStreamRequest {
+    return new GetMemoServerStreamRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetMemoServerStreamRequest {
+    return new GetMemoServerStreamRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetMemoServerStreamRequest | PlainMessage<GetMemoServerStreamRequest> | undefined, b: GetMemoServerStreamRequest | PlainMessage<GetMemoServerStreamRequest> | undefined): boolean {
+    return proto3.util.equals(GetMemoServerStreamRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message api.memo.v1.GetMemoServerStreamResponse
+ */
+export class GetMemoServerStreamResponse extends Message<GetMemoServerStreamResponse> {
+  /**
+   * @generated from field: repeated api.memo.v1.Memo memo = 1;
+   */
+  memo: Memo[] = [];
+
+  constructor(data?: PartialMessage<GetMemoServerStreamResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "api.memo.v1.GetMemoServerStreamResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "memo", kind: "message", T: Memo, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetMemoServerStreamResponse {
+    return new GetMemoServerStreamResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetMemoServerStreamResponse {
+    return new GetMemoServerStreamResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetMemoServerStreamResponse {
+    return new GetMemoServerStreamResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetMemoServerStreamResponse | PlainMessage<GetMemoServerStreamResponse> | undefined, b: GetMemoServerStreamResponse | PlainMessage<GetMemoServerStreamResponse> | undefined): boolean {
+    return proto3.util.equals(GetMemoServerStreamResponse, a, b);
+  }
+}
+
+/**
  * @generated from message api.memo.v1.DeleteMemoRequest
  */
 export class DeleteMemoRequest extends Message<DeleteMemoRequest> {

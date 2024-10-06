@@ -1,16 +1,18 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import { useClient } from "./client";
 import { MemoService } from "@/gen/api/memo/v1/memo_connect";
 import { Memo } from "@/gen/api/memo/v1/memo_pb";
 
+export type MemoType = Pick<Memo, "id" | "title" | "text">;
+
 export function useMemos() {
 	const [isLoading, setIsLoading] = useState(true);
-	const [memos, setMemos] = useState<Memo[]>([]);
+	const [memos, setMemos] = useState<MemoType[]>([]);
 	const client = useClient(MemoService);
 
 	const mergeMemo = useMemo(() => {
-		return (n?: Memo) => {
+		return (n?: MemoType) => {
 			if (!n) {
 				return;
 			}
@@ -29,12 +31,15 @@ export function useMemos() {
 		};
 	}, []);
 
-	const fetchMemos = useMemo(() => {
-		return async () => {
-			const res = await client.getMemo({});
+	const fetchMemos = async () => {
+		const stream = client.getMemoServerStream({});
+		for await (const res of stream) {
 			setMemos(res.memo);
 			setIsLoading(false);
-		};
+		}
+	};
+	useEffect(() => {
+		fetchMemos();
 	}, []);
 	return {
 		isLoading,

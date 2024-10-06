@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { DeleteMemoRequest, DeleteMemoResponse, GetMemoRequest, GetMemoResponse, MemoStreamRequest, MemoStreamResponse, RegisterMemoRequest, RegisterMemoResponse } from "./memo_pb";
+import { DeleteMemoRequest, DeleteMemoResponse, GetMemoRequest, GetMemoResponse, GetMemoServerStreamRequest, GetMemoServerStreamResponse, MemoStreamRequest, MemoStreamResponse, RegisterMemoRequest, RegisterMemoResponse } from "./memo_pb";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -20,6 +20,15 @@ export const MemoService = {
       I: GetMemoRequest,
       O: GetMemoResponse,
       kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc api.memo.v1.MemoService.GetMemoServerStream
+     */
+    getMemoServerStream: {
+      name: "GetMemoServerStream",
+      I: GetMemoServerStreamRequest,
+      O: GetMemoServerStreamResponse,
+      kind: MethodKind.ServerStreaming,
     },
     /**
      * @generated from rpc api.memo.v1.MemoService.RegisterMemo

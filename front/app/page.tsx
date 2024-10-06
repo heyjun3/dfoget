@@ -5,11 +5,7 @@ import { TextareaForm } from "@/components/form/textForm";
 import { useMemos } from "@/hooks/useMemos";
 
 export default function Page() {
-	const { isLoading, memos, fetchMemos, mergeMemo, deleteMemo } = useMemos();
-
-	useEffect(() => {
-		fetchMemos();
-	}, []);
+	const { isLoading, memos, mergeMemo, deleteMemo } = useMemos();
 
 	if (isLoading) {
 		return <></>;
