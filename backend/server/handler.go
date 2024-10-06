@@ -104,16 +104,24 @@ func (h MemoHandler) GetMemoServerStream(
 	if err != nil {
 		return connect.NewError(connect.CodeInternal, err)
 	}
+	var prevMemo []Memo
 	for {
 		memos, err := h.memoRepository.Find(context.Background(), userId)
 		if err != nil {
 			return fmt.Errorf("failed get memos")
+		}
+		if len(prevMemo) != 0 {
+			if prevMemo[0].Text == memos[0].Text && prevMemo[0].Title == memos[0].Title {
+				time.Sleep(time.Second * 10)
+				continue
+			}
 		}
 		if err := stream.Send(&memov1.GetMemoServerStreamResponse{
 			Memo: memosToDTO(memos),
 		}); err != nil {
 			return err
 		}
+		prevMemo = memos
 		time.Sleep(time.Second * 10)
 	}
 }
