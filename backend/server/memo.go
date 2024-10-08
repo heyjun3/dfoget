@@ -49,3 +49,7 @@ func WithUUID(id uuid.UUID) Option {
 		return memo, nil
 	}
 }
+
+func (m Memo) IsEqual(memo Memo) bool {
+	return m.Title == memo.Title && m.Text == memo.Text
+}
