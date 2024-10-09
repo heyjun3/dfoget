@@ -251,7 +251,7 @@ func (h OIDCHandler) recieveRedirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cookie := &http.Cookie{
-		Name:     "dforget",
+		Name:     AuthCookieName,
 		Value:    token.IdToken,
 		HttpOnly: true,
 		Path:     "/",
