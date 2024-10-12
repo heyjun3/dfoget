@@ -31,10 +31,10 @@ func NewMemov1Memo(memo *Memo) *memov1.Memo {
 		Text:  memo.Text,
 	}
 }
-func NewMemov1Memos(memos []Memo) []*memov1.Memo {
+func NewMemov1Memos(memos []*Memo) []*memov1.Memo {
 	dto := make([]*memov1.Memo, 0, len(memos))
 	for _, memo := range memos {
-		dto = append(dto, NewMemov1Memo(&memo))
+		dto = append(dto, NewMemov1Memo(memo))
 	}
 	return dto
 }
@@ -104,14 +104,14 @@ func (h MemoHandler) GetMemoServerStream(
 	if err != nil {
 		return connect.NewError(connect.CodeInternal, err)
 	}
-	var prevMemo []Memo
+	var prevMemo []*Memo
 	for {
 		memos, err := h.memoRepository.Find(context.Background(), userId)
 		if err != nil {
 			return fmt.Errorf("failed get memos")
 		}
 		if len(prevMemo) != 0 {
-			if prevMemo[0].IsEqual(memos[0]) {
+			if prevMemo[0].IsEqual(*memos[0]) {
 				time.Sleep(time.Second * 10)
 				continue
 			}

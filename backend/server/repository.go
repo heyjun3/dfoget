@@ -8,6 +8,8 @@ import (
 	"github.com/uptrace/bun"
 )
 
+var _ MemoRepositoryInterface = (*MemoRepository)(nil)
+
 type MemoRepository struct {
 	db *bun.DB
 }
@@ -18,8 +20,8 @@ func NewMemoRepository(db *bun.DB) *MemoRepository {
 	}
 }
 
-func (r *MemoRepository) Save(ctx context.Context, memos []Memo) (
-	[]Memo, error) {
+func (r *MemoRepository) Save(ctx context.Context, memos []*Memo) (
+	[]*Memo, error) {
 	dm := memoToDM(memos)
 	_, err := r.db.NewInsert().Model(&dm).
 		On("CONFLICT (id) DO UPDATE").
@@ -33,7 +35,7 @@ func (r *MemoRepository) Save(ctx context.Context, memos []Memo) (
 }
 
 func (r *MemoRepository) Find(
-	ctx context.Context, userId uuid.UUID) ([]Memo, error) {
+	ctx context.Context, userId uuid.UUID) ([]*Memo, error) {
 	dm := make([]MemoDM, 0)
 	err := r.db.NewSelect().
 		Model(&dm).
@@ -44,14 +46,21 @@ func (r *MemoRepository) Find(
 
 func (r *MemoRepository) GetById(
 	ctx context.Context, userId uuid.UUID, id uuid.UUID) (
-	Memo, error) {
+	*Memo, error) {
 	var dm MemoDM
-	err := r.db.NewSelect().
+	userId, err := GetSubValue(ctx)
+	if err != nil {
+		return nil, err
+	}
+	err = r.db.NewSelect().
 		Model(&dm).
 		Where("user_id = ?", userId.String()).
 		Where("id = ?", id.String()).
 		Limit(1).
 		Scan(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return dmToMemo(dm), err
 }
 
@@ -66,8 +75,8 @@ func (r *MemoRepository) DeleteByIds(
 	return ids, err
 }
 
-func dmToMemo(memoDM MemoDM) Memo {
-	return Memo{
+func dmToMemo(memoDM MemoDM) *Memo {
+	return &Memo{
 		ID:     memoDM.ID,
 		UserId: memoDM.UserId,
 		Title:  memoDM.Title,
@@ -75,15 +84,15 @@ func dmToMemo(memoDM MemoDM) Memo {
 	}
 }
 
-func dmToMemos(memoDM []MemoDM) []Memo {
-	memos := make([]Memo, 0, len(memoDM))
+func dmToMemos(memoDM []MemoDM) []*Memo {
+	memos := make([]*Memo, 0, len(memoDM))
 	for _, dm := range memoDM {
 		memos = append(memos, dmToMemo(dm))
 	}
 	return memos
 }
 
-func memoToDM(memos []Memo) []MemoDM {
+func memoToDM(memos []*Memo) []MemoDM {
 	dm := make([]MemoDM, 0, len(memos))
 	for _, memo := range memos {
 		dm = append(dm, MemoDM{

@@ -18,6 +18,7 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 		NewMemoRepository,
 		NewRegisterMemoService,
 		NewMemoHandler,
+		wire.Bind(new(MemoRepositoryInterface), new(*MemoRepository)),
 	)
 	return nil
 }

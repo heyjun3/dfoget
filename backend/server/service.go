@@ -6,11 +6,16 @@ import (
 	"github.com/google/uuid"
 )
 
-type RegisterMemoService struct {
-	memoRepository *MemoRepository
+type MemoRepositoryInterface interface {
+	GetById(context.Context, uuid.UUID, uuid.UUID) (*Memo, error)
+	Save(context.Context, []*Memo) ([]*Memo, error)
 }
 
-func NewRegisterMemoService(memoRepository *MemoRepository) *RegisterMemoService {
+type RegisterMemoService struct {
+	memoRepository MemoRepositoryInterface
+}
+
+func NewRegisterMemoService(memoRepository MemoRepositoryInterface) *RegisterMemoService {
 	return &RegisterMemoService{
 		memoRepository: memoRepository,
 	}
@@ -21,7 +26,7 @@ func (s RegisterMemoService) execute(
 	*Memo, error,
 ) {
 	var opts []Option
-	var memo Memo
+	var memo *Memo
 	if id != nil {
 		uu, err := uuid.Parse(*id)
 		if err != nil {
@@ -38,11 +43,11 @@ func (s RegisterMemoService) execute(
 		if err != nil {
 			return nil, err
 		}
-		memo = *memoPtr
+		memo = memoPtr
 	}
-	_, err := s.memoRepository.Save(context.Background(), []Memo{memo})
+	_, err := s.memoRepository.Save(ctx, []*Memo{memo})
 	if err != nil {
 		return nil, err
 	}
-	return &memo, nil
+	return memo, nil
 }

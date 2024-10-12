@@ -24,16 +24,17 @@ func TestMemoRepository(t *testing.T) {
 	t.Run("save, find, and delete memo", func(t *testing.T) {
 		id, _ := uuid.NewV7()
 		userId := uuid.New()
-		memos := []server.Memo{
+		ctx := server.SetSubKey(context.Background(), userId.String())
+		memos := []*server.Memo{
 			{ID: id, Title: "title", Text: "text", UserId: userId},
 		}
 
-		_, err := repo.Save(context.Background(), memos)
+		_, err := repo.Save(ctx, memos)
 		assert.NoError(t, err)
 
-		memos, err = repo.Find(context.Background(), userId)
+		memos, err = repo.Find(ctx, userId)
 		assert.NoError(t, err)
-		assert.Equal(t, []server.Memo{
+		assert.Equal(t, []*server.Memo{
 			{
 				ID:     id,
 				Title:  "title",
@@ -41,16 +42,16 @@ func TestMemoRepository(t *testing.T) {
 				UserId: userId,
 			}}, memos)
 
-		memo, err := repo.GetById(context.Background(), userId, id)
+		memo, err := repo.GetById(ctx, userId, id)
 		assert.NoError(t, err)
 		assert.Equal(t, memos[0], memo)
 
-		_, err = repo.DeleteByIds(context.Background(),
+		_, err = repo.DeleteByIds(ctx,
 			userId, []uuid.UUID{id})
 		assert.NoError(t, err)
 
 		memos, err = repo.Find(context.Background(), userId)
 		assert.NoError(t, err)
-		assert.Equal(t, []server.Memo{}, memos)
+		assert.Equal(t, []*server.Memo{}, memos)
 	})
 }
