@@ -5,10 +5,11 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/heyjun3/dforget/backend/domain/memo"
 	"github.com/uptrace/bun"
 )
 
-var _ MemoRepositoryInterface = (*MemoRepository)(nil)
+var _ memo.MemoRepositoryInterface = (*MemoRepository)(nil)
 
 type MemoRepository struct {
 	db *bun.DB
@@ -20,8 +21,8 @@ func NewMemoRepository(db *bun.DB) *MemoRepository {
 	}
 }
 
-func (r *MemoRepository) Save(ctx context.Context, memos []*Memo) (
-	[]*Memo, error) {
+func (r *MemoRepository) Save(ctx context.Context, memos []*memo.Memo) (
+	[]*memo.Memo, error) {
 	dm := memoToDM(memos)
 	_, err := r.db.NewInsert().Model(&dm).
 		On("CONFLICT (id) DO UPDATE").
@@ -35,7 +36,7 @@ func (r *MemoRepository) Save(ctx context.Context, memos []*Memo) (
 }
 
 func (r *MemoRepository) Find(
-	ctx context.Context, userId uuid.UUID) ([]*Memo, error) {
+	ctx context.Context, userId uuid.UUID) ([]*memo.Memo, error) {
 	dm := make([]MemoDM, 0)
 	err := r.db.NewSelect().
 		Model(&dm).
@@ -45,8 +46,8 @@ func (r *MemoRepository) Find(
 }
 
 func (r *MemoRepository) GetById(
-	ctx context.Context, userId uuid.UUID, id uuid.UUID) (
-	*Memo, error) {
+	ctx context.Context, id uuid.UUID) (
+	*memo.Memo, error) {
 	var dm MemoDM
 	userId, err := GetSubValue(ctx)
 	if err != nil {
@@ -75,8 +76,8 @@ func (r *MemoRepository) DeleteByIds(
 	return ids, err
 }
 
-func dmToMemo(memoDM MemoDM) *Memo {
-	return &Memo{
+func dmToMemo(memoDM MemoDM) *memo.Memo {
+	return &memo.Memo{
 		ID:     memoDM.ID,
 		UserId: memoDM.UserId,
 		Title:  memoDM.Title,
@@ -84,15 +85,15 @@ func dmToMemo(memoDM MemoDM) *Memo {
 	}
 }
 
-func dmToMemos(memoDM []MemoDM) []*Memo {
-	memos := make([]*Memo, 0, len(memoDM))
+func dmToMemos(memoDM []MemoDM) []*memo.Memo {
+	memos := make([]*memo.Memo, 0, len(memoDM))
 	for _, dm := range memoDM {
 		memos = append(memos, dmToMemo(dm))
 	}
 	return memos
 }
 
-func memoToDM(memos []*Memo) []MemoDM {
+func memoToDM(memos []*memo.Memo) []MemoDM {
 	dm := make([]MemoDM, 0, len(memos))
 	for _, memo := range memos {
 		dm = append(dm, MemoDM{

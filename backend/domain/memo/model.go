@@ -1,4 +1,4 @@
-package server
+package memo
 
 import (
 	"github.com/google/uuid"
@@ -12,7 +12,7 @@ type Memo struct {
 }
 
 func NewMemo(title, text string, userId uuid.UUID, opts ...Option) (*Memo, error) {
-	id, err := uuid.NewV7()
+	id, err := uuid.NewV6()
 	if err != nil {
 		return nil, err
 	}

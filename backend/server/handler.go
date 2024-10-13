@@ -14,6 +14,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
+	"github.com/heyjun3/dforget/backend/domain/memo"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
 	memov1connect "github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 )
@@ -24,14 +25,14 @@ func Ptr[T any](v T) *T {
 
 var _ memov1connect.MemoServiceHandler = (*MemoHandler)(nil)
 
-func NewMemov1Memo(memo *Memo) *memov1.Memo {
+func NewMemov1Memo(memo *memo.Memo) *memov1.Memo {
 	return &memov1.Memo{
 		Id:    Ptr(memo.ID.String()),
 		Title: memo.Title,
 		Text:  memo.Text,
 	}
 }
-func NewMemov1Memos(memos []*Memo) []*memov1.Memo {
+func NewMemov1Memos(memos []*memo.Memo) []*memov1.Memo {
 	dto := make([]*memov1.Memo, 0, len(memos))
 	for _, memo := range memos {
 		dto = append(dto, NewMemov1Memo(memo))
@@ -40,7 +41,7 @@ func NewMemov1Memos(memos []*Memo) []*memov1.Memo {
 }
 
 func NewMemoHandler(memoRepository *MemoRepository,
-	registerMemoService *RegisterMemoService) *MemoHandler {
+	registerMemoService *memo.RegisterMemoService) *MemoHandler {
 	return &MemoHandler{
 		memoRepository:      memoRepository,
 		registerMemoService: registerMemoService,
@@ -49,7 +50,7 @@ func NewMemoHandler(memoRepository *MemoRepository,
 
 type MemoHandler struct {
 	memoRepository      *MemoRepository
-	registerMemoService *RegisterMemoService
+	registerMemoService *memo.RegisterMemoService
 }
 
 func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memov1.RegisterMemoRequest]) (
@@ -63,7 +64,7 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 	id := req.Msg.Memo.Id
 	title := req.Msg.Memo.Title
 	text := req.Msg.Memo.Text
-	memo, err := h.registerMemoService.execute(ctx, sub, id, title, text)
+	memo, err := h.registerMemoService.Execute(ctx, sub, id, title, text)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -104,7 +105,7 @@ func (h MemoHandler) GetMemoServerStream(
 	if err != nil {
 		return connect.NewError(connect.CodeInternal, err)
 	}
-	var prevMemo []*Memo
+	var prevMemo []*memo.Memo
 	for {
 		memos, err := h.memoRepository.Find(context.Background(), userId)
 		if err != nil {
@@ -173,7 +174,7 @@ func (h MemoHandler) MemoStream(ctx context.Context,
 		id := msg.Memo.Id
 		title := msg.Memo.Title
 		text := msg.Memo.Text
-		memo, err := h.registerMemoService.execute(
+		memo, err := h.registerMemoService.Execute(
 			ctx, sub, id, title, text)
 		if err != nil {
 			return connect.NewError(connect.CodeInternal, err)

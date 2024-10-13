@@ -1,4 +1,4 @@
-package server
+package memo
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 )
 
 type MemoRepositoryInterface interface {
-	GetById(context.Context, uuid.UUID, uuid.UUID) (*Memo, error)
+	GetById(context.Context, uuid.UUID) (*Memo, error)
 	Save(context.Context, []*Memo) ([]*Memo, error)
 }
 
@@ -21,7 +21,7 @@ func NewRegisterMemoService(memoRepository MemoRepositoryInterface) *RegisterMem
 	}
 }
 
-func (s RegisterMemoService) execute(
+func (s RegisterMemoService) Execute(
 	ctx context.Context, sub uuid.UUID, id *string, title, text string) (
 	*Memo, error,
 ) {
@@ -32,7 +32,7 @@ func (s RegisterMemoService) execute(
 		if err != nil {
 			return nil, err
 		}
-		memo, err = s.memoRepository.GetById(ctx, sub, uu)
+		memo, err = s.memoRepository.GetById(ctx, uu)
 		if err != nil {
 			return nil, err
 		}

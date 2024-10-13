@@ -16,3 +16,12 @@ atlas-schema-apply-test:
 		--to "file://schema.sql" \
 		--url "postgres://dev:dev@localhost:5432/test?sslmode=disable" \
 		--dev-url "docker://postgres"
+
+fmt:
+	go fmt ./...
+
+test: fmt
+	go test ./...
+
+gen-wire:
+	wire gen ./server

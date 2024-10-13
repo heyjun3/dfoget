@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/heyjun3/dforget/backend/domain/memo"
 	"github.com/heyjun3/dforget/backend/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/uptrace/bun"
@@ -25,7 +26,7 @@ func TestMemoRepository(t *testing.T) {
 		id, _ := uuid.NewV7()
 		userId := uuid.New()
 		ctx := server.SetSubKey(context.Background(), userId.String())
-		memos := []*server.Memo{
+		memos := []*memo.Memo{
 			{ID: id, Title: "title", Text: "text", UserId: userId},
 		}
 
@@ -34,7 +35,7 @@ func TestMemoRepository(t *testing.T) {
 
 		memos, err = repo.Find(ctx, userId)
 		assert.NoError(t, err)
-		assert.Equal(t, []*server.Memo{
+		assert.Equal(t, []*memo.Memo{
 			{
 				ID:     id,
 				Title:  "title",
@@ -42,9 +43,9 @@ func TestMemoRepository(t *testing.T) {
 				UserId: userId,
 			}}, memos)
 
-		memo, err := repo.GetById(ctx, userId, id)
+		m, err := repo.GetById(ctx, id)
 		assert.NoError(t, err)
-		assert.Equal(t, memos[0], memo)
+		assert.Equal(t, memos[0], m)
 
 		_, err = repo.DeleteByIds(ctx,
 			userId, []uuid.UUID{id})
@@ -52,6 +53,6 @@ func TestMemoRepository(t *testing.T) {
 
 		memos, err = repo.Find(context.Background(), userId)
 		assert.NoError(t, err)
-		assert.Equal(t, []*server.Memo{}, memos)
+		assert.Equal(t, []*memo.Memo{}, memos)
 	})
 }

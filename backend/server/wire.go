@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/google/wire"
+	"github.com/heyjun3/dforget/backend/domain/memo"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -16,9 +17,9 @@ import (
 func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	wire.Build(
 		NewMemoRepository,
-		NewRegisterMemoService,
+		memo.NewRegisterMemoService,
 		NewMemoHandler,
-		wire.Bind(new(MemoRepositoryInterface), new(*MemoRepository)),
+		wire.Bind(new(memo.MemoRepositoryInterface), new(*MemoRepository)),
 	)
 	return nil
 }

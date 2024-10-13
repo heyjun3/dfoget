@@ -8,6 +8,7 @@ package server
 
 import (
 	"database/sql"
+	"github.com/heyjun3/dforget/backend/domain/memo"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -18,7 +19,7 @@ import (
 
 func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	memoRepository := NewMemoRepository(db)
-	registerMemoService := NewRegisterMemoService(memoRepository)
+	registerMemoService := memo.NewRegisterMemoService(memoRepository)
 	memoHandler := NewMemoHandler(memoRepository, registerMemoService)
 	return memoHandler
 }
