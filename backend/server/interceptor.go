@@ -11,26 +11,12 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
+	"github.com/heyjun3/dforget/backend/lib"
 )
 
 const (
 	AuthCookieName = "dforget"
 )
-
-type subKey struct{}
-
-func SetSubKey(ctx context.Context, sub string) context.Context {
-	return context.WithValue(ctx, subKey{}, sub)
-}
-func GetSubValue(ctx context.Context) (uuid.UUID, error) {
-	val, ok := ctx.Value(subKey{}).(string)
-	if !ok {
-		return uuid.Nil, fmt.Errorf("no set subject value")
-	}
-	sub, err := uuid.Parse(val)
-	return sub, err
-}
 
 func NewPublicKey(pubkey string) (*rsa.PublicKey, error) {
 	var bytes []byte
@@ -123,7 +109,7 @@ func (i *authInterceptor) WrapUnary(
 				fmt.Errorf("invalid access token"),
 			)
 		}
-		ctx = SetSubKey(ctx, claim.sub)
+		ctx = lib.SetSubKey(ctx, claim.sub)
 		return next(ctx, req)
 	})
 }
@@ -158,7 +144,7 @@ func (i *authInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc
 				fmt.Errorf("invalid access token"),
 			)
 		}
-		ctx = SetSubKey(ctx, claim.sub)
+		ctx = lib.SetSubKey(ctx, claim.sub)
 		return next(ctx, conn)
 	})
 }
@@ -209,7 +195,7 @@ func NewAuthInterceptor(conf Config) connect.UnaryInterceptorFunc {
 					fmt.Errorf("token isn't valid"),
 				)
 			}
-			ctx = SetSubKey(ctx, sub)
+			ctx = lib.SetSubKey(ctx, sub)
 			return next(ctx, req)
 		})
 	}

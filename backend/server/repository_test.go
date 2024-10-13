@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/heyjun3/dforget/backend/domain/memo"
+	"github.com/heyjun3/dforget/backend/lib"
 	"github.com/heyjun3/dforget/backend/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/uptrace/bun"
@@ -25,7 +26,7 @@ func TestMemoRepository(t *testing.T) {
 	t.Run("save, find, and delete memo", func(t *testing.T) {
 		id, _ := uuid.NewV7()
 		userId := uuid.New()
-		ctx := server.SetSubKey(context.Background(), userId.String())
+		ctx := lib.SetSubKey(context.Background(), userId.String())
 		memos := []*memo.Memo{
 			{ID: id, Title: "title", Text: "text", UserId: userId},
 		}

@@ -14,9 +14,11 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
+	memoapp "github.com/heyjun3/dforget/backend/app/memo"
 	"github.com/heyjun3/dforget/backend/domain/memo"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
 	memov1connect "github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
+	"github.com/heyjun3/dforget/backend/lib"
 )
 
 func Ptr[T any](v T) *T {
@@ -41,30 +43,29 @@ func NewMemov1Memos(memos []*memo.Memo) []*memov1.Memo {
 }
 
 func NewMemoHandler(memoRepository *MemoRepository,
-	registerMemoService *memo.RegisterMemoService) *MemoHandler {
+	registerMemoService *memo.RegisterMemoService,
+	memoUsecase *memoapp.MemoUsecase,
+) *MemoHandler {
 	return &MemoHandler{
 		memoRepository:      memoRepository,
 		registerMemoService: registerMemoService,
+		memoUsecase:         memoUsecase,
 	}
 }
 
 type MemoHandler struct {
 	memoRepository      *MemoRepository
 	registerMemoService *memo.RegisterMemoService
+	memoUsecase         *memoapp.MemoUsecase
 }
 
 func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memov1.RegisterMemoRequest]) (
 	*connect.Response[memov1.RegisterMemoResponse], error,
 ) {
-	sub, err := GetSubValue(ctx)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
 	id := req.Msg.Memo.Id
 	title := req.Msg.Memo.Title
 	text := req.Msg.Memo.Text
-	memo, err := h.registerMemoService.Execute(ctx, sub, id, title, text)
+	memo, err := h.memoUsecase.RegisterMemo(ctx, id, title, text)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -80,7 +81,7 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 func (h MemoHandler) GetMemo(ctx context.Context, req *connect.Request[memov1.GetMemoRequest]) (
 	*connect.Response[memov1.GetMemoResponse], error,
 ) {
-	userId, err := GetSubValue(ctx)
+	userId, err := lib.GetSubValue(ctx)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -101,7 +102,7 @@ func (h MemoHandler) GetMemoServerStream(
 	req *connect.Request[memov1.GetMemoServerStreamRequest],
 	stream *connect.ServerStream[memov1.GetMemoServerStreamResponse],
 ) error {
-	userId, err := GetSubValue(ctx)
+	userId, err := lib.GetSubValue(ctx)
 	if err != nil {
 		return connect.NewError(connect.CodeInternal, err)
 	}
@@ -130,7 +131,7 @@ func (h MemoHandler) GetMemoServerStream(
 func (h MemoHandler) DeleteMemo(ctx context.Context, req *connect.Request[memov1.DeleteMemoRequest]) (
 	*connect.Response[memov1.DeleteMemoResponse], error,
 ) {
-	userId, err := GetSubValue(ctx)
+	userId, err := lib.GetSubValue(ctx)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -166,7 +167,7 @@ func (h MemoHandler) MemoStream(ctx context.Context,
 			return connect.NewError(connect.CodeInternal, fmt.Errorf("failed to receive request: %w", err))
 		}
 
-		sub, err := GetSubValue(ctx)
+		sub, err := lib.GetSubValue(ctx)
 		if err != nil {
 			return connect.NewError(connect.CodeInternal, err)
 		}

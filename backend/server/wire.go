@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/google/wire"
+	memoapp "github.com/heyjun3/dforget/backend/app/memo"
 	"github.com/heyjun3/dforget/backend/domain/memo"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -18,6 +19,7 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	wire.Build(
 		NewMemoRepository,
 		memo.NewRegisterMemoService,
+		memoapp.NewMemoUsecase,
 		NewMemoHandler,
 		wire.Bind(new(memo.MemoRepositoryInterface), new(*MemoRepository)),
 	)

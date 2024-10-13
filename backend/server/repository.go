@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/heyjun3/dforget/backend/domain/memo"
+	"github.com/heyjun3/dforget/backend/lib"
 	"github.com/uptrace/bun"
 )
 
@@ -49,7 +50,7 @@ func (r *MemoRepository) GetById(
 	ctx context.Context, id uuid.UUID) (
 	*memo.Memo, error) {
 	var dm MemoDM
-	userId, err := GetSubValue(ctx)
+	userId, err := lib.GetSubValue(ctx)
 	if err != nil {
 		return nil, err
 	}
