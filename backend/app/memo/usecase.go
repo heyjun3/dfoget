@@ -7,14 +7,23 @@ import (
 	"github.com/heyjun3/dforget/backend/lib"
 )
 
-func NewMemoUsecase(registerMemoService *domain.RegisterMemoService) *MemoUsecase {
+type MemoRepositoryInterface interface {
+	Find(context.Context) ([]*domain.Memo, error)
+}
+
+func NewMemoUsecase(
+	registerMemoService *domain.RegisterMemoService,
+	memoRepositoryInterface MemoRepositoryInterface,
+) *MemoUsecase {
 	return &MemoUsecase{
-		registerMemoService: registerMemoService,
+		registerMemoService:     registerMemoService,
+		memoRepositoryInterface: memoRepositoryInterface,
 	}
 }
 
 type MemoUsecase struct {
-	registerMemoService *domain.RegisterMemoService
+	registerMemoService     *domain.RegisterMemoService
+	memoRepositoryInterface MemoRepositoryInterface
 }
 
 func (u *MemoUsecase) RegisterMemo(ctx context.Context, id *string, title, text string) (*domain.Memo, error) {
@@ -27,4 +36,8 @@ func (u *MemoUsecase) RegisterMemo(ctx context.Context, id *string, title, text 
 		return nil, err
 	}
 	return memo, nil
+}
+
+func (u *MemoUsecase) FindMemos(ctx context.Context) ([]*domain.Memo, error) {
+	return u.memoRepositoryInterface.Find(ctx)
 }

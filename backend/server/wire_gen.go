@@ -21,7 +21,7 @@ import (
 func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	memoRepository := NewMemoRepository(db)
 	registerMemoService := memo.NewRegisterMemoService(memoRepository)
-	memoUsecase := memo2.NewMemoUsecase(registerMemoService)
+	memoUsecase := memo2.NewMemoUsecase(registerMemoService, memoRepository)
 	memoHandler := NewMemoHandler(memoRepository, registerMemoService, memoUsecase)
 	return memoHandler
 }

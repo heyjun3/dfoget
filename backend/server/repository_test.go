@@ -34,7 +34,7 @@ func TestMemoRepository(t *testing.T) {
 		_, err := repo.Save(ctx, memos)
 		assert.NoError(t, err)
 
-		memos, err = repo.Find(ctx, userId)
+		memos, err = repo.Find(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, []*memo.Memo{
 			{
@@ -52,7 +52,7 @@ func TestMemoRepository(t *testing.T) {
 			userId, []uuid.UUID{id})
 		assert.NoError(t, err)
 
-		memos, err = repo.Find(context.Background(), userId)
+		memos, err = repo.Find(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, []*memo.Memo{}, memos)
 	})

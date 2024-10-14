@@ -22,6 +22,7 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 		memoapp.NewMemoUsecase,
 		NewMemoHandler,
 		wire.Bind(new(memo.MemoRepositoryInterface), new(*MemoRepository)),
+		wire.Bind(new(memoapp.MemoRepositoryInterface), new(*MemoRepository)),
 	)
 	return nil
 }

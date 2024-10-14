@@ -81,11 +81,7 @@ func (h MemoHandler) RegisterMemo(ctx context.Context, req *connect.Request[memo
 func (h MemoHandler) GetMemo(ctx context.Context, req *connect.Request[memov1.GetMemoRequest]) (
 	*connect.Response[memov1.GetMemoResponse], error,
 ) {
-	userId, err := lib.GetSubValue(ctx)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	memos, err := h.memoRepository.Find(context.Background(), userId)
+	memos, err := h.memoUsecase.FindMemos(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -102,13 +98,9 @@ func (h MemoHandler) GetMemoServerStream(
 	req *connect.Request[memov1.GetMemoServerStreamRequest],
 	stream *connect.ServerStream[memov1.GetMemoServerStreamResponse],
 ) error {
-	userId, err := lib.GetSubValue(ctx)
-	if err != nil {
-		return connect.NewError(connect.CodeInternal, err)
-	}
 	var prevMemo []*memo.Memo
 	for {
-		memos, err := h.memoRepository.Find(context.Background(), userId)
+		memos, err := h.memoUsecase.FindMemos(ctx)
 		if err != nil {
 			return fmt.Errorf("failed get memos")
 		}

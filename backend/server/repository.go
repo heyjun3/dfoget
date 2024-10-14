@@ -5,12 +5,14 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	memoapp "github.com/heyjun3/dforget/backend/app/memo"
 	"github.com/heyjun3/dforget/backend/domain/memo"
 	"github.com/heyjun3/dforget/backend/lib"
 	"github.com/uptrace/bun"
 )
 
 var _ memo.MemoRepositoryInterface = (*MemoRepository)(nil)
+var _ memoapp.MemoRepositoryInterface = (*MemoRepository)(nil)
 
 type MemoRepository struct {
 	db *bun.DB
@@ -37,9 +39,13 @@ func (r *MemoRepository) Save(ctx context.Context, memos []*memo.Memo) (
 }
 
 func (r *MemoRepository) Find(
-	ctx context.Context, userId uuid.UUID) ([]*memo.Memo, error) {
+	ctx context.Context) ([]*memo.Memo, error) {
+	userId, err := lib.GetSubValue(ctx)
+	if err != nil {
+		return nil, err
+	}
 	dm := make([]MemoDM, 0)
-	err := r.db.NewSelect().
+	err = r.db.NewSelect().
 		Model(&dm).
 		Where("user_id = ?", userId.String()).
 		Scan(ctx)
