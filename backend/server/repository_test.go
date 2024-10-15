@@ -48,8 +48,7 @@ func TestMemoRepository(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, memos[0], m)
 
-		_, err = repo.DeleteByIds(ctx,
-			userId, []uuid.UUID{id})
+		err = repo.DeleteByIds(ctx, []uuid.UUID{id})
 		assert.NoError(t, err)
 
 		memos, err = repo.Find(ctx)

@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	memoapp "github.com/heyjun3/dforget/backend/app/memo"
 	"github.com/heyjun3/dforget/backend/domain/memo"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
@@ -123,20 +122,7 @@ func (h MemoHandler) GetMemoServerStream(
 func (h MemoHandler) DeleteMemo(ctx context.Context, req *connect.Request[memov1.DeleteMemoRequest]) (
 	*connect.Response[memov1.DeleteMemoResponse], error,
 ) {
-	userId, err := lib.GetSubValue(ctx)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	ids := req.Msg.Id
-	var uuids []uuid.UUID
-	for _, id := range ids {
-		uu, err := uuid.Parse(id)
-		if err != nil {
-			return nil, err
-		}
-		uuids = append(uuids, uu)
-	}
-	_, err = h.memoRepository.DeleteByIds(context.Background(), userId, uuids)
+	err := h.memoUsecase.DeleteMemo(ctx, req.Msg.Id)
 	if err != nil {
 		return nil, err
 	}

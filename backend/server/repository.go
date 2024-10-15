@@ -73,14 +73,17 @@ func (r *MemoRepository) GetById(
 }
 
 func (r *MemoRepository) DeleteByIds(
-	ctx context.Context, userId uuid.UUID, ids []uuid.UUID) (
-	[]uuid.UUID, error) {
-	_, err := r.db.NewDelete().
+	ctx context.Context, ids []uuid.UUID) error {
+	userId, err := lib.GetSubValue(ctx)
+	if err != nil {
+		return err
+	}
+	_, err = r.db.NewDelete().
 		Model((*MemoDM)(nil)).
 		Where("id IN (?)", bun.In(ids)).
 		Where("user_id = ?", userId.String()).
 		Exec(ctx)
-	return ids, err
+	return err
 }
 
 func dmToMemo(memoDM MemoDM) *memo.Memo {
