@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"fmt"
 	"slices"
 	"time"
 
@@ -8,17 +9,24 @@ import (
 )
 
 type Room struct {
-	ID       uuid.UUID
-	Messages []Message
+	ID        uuid.UUID
+	Name      string
+	Messages  []Message
+	CreatedAt time.Time
 }
 
-func NewRoom() (*Room, error) {
+func newRoom(name string) (*Room, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
 		return nil, err
 	}
+	if name == "" {
+		return nil, fmt.Errorf("room name is required")
+	}
 	return &Room{
-		ID: id,
+		ID:        id,
+		Name:      name,
+		CreatedAt: time.Now(),
 	}, nil
 }
 
