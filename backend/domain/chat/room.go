@@ -1,17 +1,25 @@
 package chat
 
 import (
+	"context"
 	"fmt"
 	"slices"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/heyjun3/dforget/backend/lib"
 )
 
 type Room struct {
 	ID        uuid.UUID
 	Name      string
 	Messages  []Message
+	CreatedAt time.Time
+}
+
+type RoomWithoutMessage struct {
+	ID        uuid.UUID
+	Name      string
 	CreatedAt time.Time
 }
 
@@ -30,8 +38,17 @@ func newRoom(name string) (*Room, error) {
 	}, nil
 }
 
-func (r *Room) AddMessage(message Message) {
-	r.Messages = append(r.Messages, message)
+func (r *Room) AddMessage(ctx context.Context, text string) error {
+	userId, err := lib.GetSubValue(ctx)
+	if err != nil {
+		return err
+	}
+	message, err := newMessage(userId, r.ID, text)
+	if err != nil {
+		return err
+	}
+	r.Messages = append(r.Messages, *message)
+	return nil
 }
 
 func (r *Room) DeleteMessage(messageId uuid.UUID) {
@@ -48,7 +65,7 @@ type Message struct {
 	CreatedAt time.Time
 }
 
-func NewMessage(userID, roomID uuid.UUID, text string) (*Message, error) {
+func newMessage(userID, roomID uuid.UUID, text string) (*Message, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
 		return nil, err
