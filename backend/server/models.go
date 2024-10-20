@@ -13,10 +13,18 @@ type MemoDM struct {
 	Text          string    `bun:"type:text,notnull"`
 }
 
-func ModelsToBytes(db *bun.DB, models []interface{}) []byte {
+type Models struct {
+	Model interface{}
+	Fkey  *string
+}
+
+func ModelsToBytes(db *bun.DB, models []Models) []byte {
 	var data []byte
-	for _, model := range models {
-		query := db.NewCreateTable().Model(model).WithForeignKeys()
+	for _, m := range models {
+		query := db.NewCreateTable().Model(m.Model).WithForeignKeys()
+		if m.Fkey != nil {
+			query.ForeignKey(*m.Fkey)
+		}
 		raw, err := query.AppendQuery(db.Formatter(), nil)
 		if err != nil {
 			panic(err)

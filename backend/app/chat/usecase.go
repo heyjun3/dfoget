@@ -7,7 +7,7 @@ import (
 	"github.com/heyjun3/dforget/backend/domain/chat"
 )
 
-type RoomRepositoryInterface interface {
+type RoomRepository interface {
 	DeleteById(context.Context, uuid.UUID) error
 	GetRoom(context.Context, uuid.UUID) (*chat.Room, error)
 	GetRoomsWithoutMessage(context.Context) ([]*chat.RoomWithoutMessage, error)
@@ -16,12 +16,12 @@ type RoomRepositoryInterface interface {
 
 type RoomUsecase struct {
 	createRoomService chat.CreateRoomService
-	roomRepository    RoomRepositoryInterface
+	roomRepository    RoomRepository
 }
 
 func NewRoomUsecase(
 	createRoomService chat.CreateRoomService,
-	roomRepository RoomRepositoryInterface,
+	roomRepository RoomRepository,
 ) *RoomUsecase {
 	return &RoomUsecase{
 		createRoomService: createRoomService,
