@@ -70,7 +70,9 @@ func (r *ChatRepository) GetRoomsWithoutMessage(ctx context.Context) ([]*chat.Ro
 }
 
 func (r *ChatRepository) Save(ctx context.Context, room *chat.Room) error {
-	return nil
+	dm := roomToDM(room)
+	_, err := r.db.NewInsert().Model(dm).Exec(ctx)
+	return err
 }
 
 func dmToRoom(dm *RoomDM) *chat.Room {
@@ -113,4 +115,31 @@ func dmToMessages(dm []*MessageDM) []chat.Message {
 		messages = append(messages, *dmToMessage(d))
 	}
 	return messages
+}
+
+func roomToDM(room *chat.Room) *RoomDM {
+	dm := &RoomDM{
+		ID:        room.ID,
+		Name:      room.Name,
+		CreatedAt: room.CreatedAt,
+		Messages:  messagesToDM(room.Messages),
+	}
+	return dm
+}
+
+func messageToDM(message *chat.Message) *MessageDM {
+	return &MessageDM{
+		ID:        message.ID,
+		UserID:    message.UserID,
+		RoomID:    message.RoomID,
+		Text:      message.Text,
+		CreatedAt: message.CreatedAt,
+	}
+}
+func messagesToDM(messages []chat.Message) []*MessageDM {
+	dm := make([]*MessageDM, 0, len(messages))
+	for _, message := range messages {
+		dm = append(dm, messageToDM(&message))
+	}
+	return dm
 }
