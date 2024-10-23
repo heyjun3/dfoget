@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -12,10 +13,10 @@ import (
 
 type RoomDM struct {
 	bun.BaseModel `bun:"table:rooms"`
-	ID            uuid.UUID    `bun:"id,pk,type:uuid"`
-	Name          string       `bun:"name,type:text,notnull,unique"`
-	CreatedAt     time.Time    `bun:"type:timestamp,notnull,default:now()"`
-	Messages      []*MessageDM `bun:"rel:has-many,join:id=room_id"`
+	ID            uuid.UUID     `bun:"id,pk,type:uuid"`
+	Name          string        `bun:"name,type:text,notnull,unique"`
+	CreatedAt     time.Time     `bun:"type:timestamp,notnull,default:now()"`
+	Messages      *[]*MessageDM `bun:"rel:has-many,join:id=room_id"`
 }
 
 type MessageDM struct {
@@ -40,25 +41,33 @@ func NewChatRepository(db *bun.DB) *ChatRepository {
 	}
 }
 
-func (r *ChatRepository) Exists(ctx context.Context, name string) (bool, error) {
-	var room *RoomDM
-	if err := r.db.NewSelect().Model(room).Where("name = ?", name).Scan(ctx); err != nil {
-		return false, err
+func (r *ChatRepository) Save(ctx context.Context, room *chat.Room) error {
+	dm := roomToDM(room)
+	_, err := r.db.NewInsert().Model(dm).Exec(ctx)
+	if err != nil {
+		return err
 	}
-	return room != nil, nil
+	_, err = r.db.NewInsert().Model(&dm.Messages).Exec(ctx)
+	return err
+}
+
+func (r *ChatRepository) Exists(ctx context.Context, name string) (bool, error) {
+	return r.db.NewSelect().Model((*RoomDM)(nil)).Where("name = ?", name).Exists(ctx)
+}
+
+func (r *ChatRepository) GetRoom(ctx context.Context, id uuid.UUID) (*chat.Room, error) {
+	room := new(RoomDM)
+	if err := r.db.NewSelect().
+		Relation("Messages").
+		Model(room).Where("id = ?", id).Scan(ctx); err != nil {
+		return nil, err
+	}
+	return dmToRoom(room), nil
 }
 
 func (r *ChatRepository) DeleteById(ctx context.Context, id uuid.UUID) error {
 	_, err := r.db.NewDelete().Model((*RoomDM)(nil)).Where("id = ?", id).Exec(ctx)
 	return err
-}
-
-func (r *ChatRepository) GetRoom(ctx context.Context, id uuid.UUID) (*chat.Room, error) {
-	var room *RoomDM
-	if err := r.db.NewSelect().Model(room).Where("id = ?", id).Scan(ctx); err != nil {
-		return nil, err
-	}
-	return dmToRoom(room), nil
 }
 
 func (r *ChatRepository) GetRoomsWithoutMessage(ctx context.Context) ([]*chat.RoomWithoutMessage, error) {
@@ -67,12 +76,6 @@ func (r *ChatRepository) GetRoomsWithoutMessage(ctx context.Context) ([]*chat.Ro
 		return nil, nil
 	}
 	return dmToRoomWithoutMessages(rooms), nil
-}
-
-func (r *ChatRepository) Save(ctx context.Context, room *chat.Room) error {
-	dm := roomToDM(room)
-	_, err := r.db.NewInsert().Model(dm).Exec(ctx)
-	return err
 }
 
 func dmToRoom(dm *RoomDM) *chat.Room {
@@ -109,15 +112,16 @@ func dmToMessage(dm *MessageDM) *chat.Message {
 	}
 }
 
-func dmToMessages(dm []*MessageDM) []chat.Message {
-	messages := make([]chat.Message, 0, len(dm))
-	for _, d := range dm {
+func dmToMessages(dm *[]*MessageDM) []chat.Message {
+	messages := make([]chat.Message, 0, len(*dm))
+	for _, d := range *dm {
 		messages = append(messages, *dmToMessage(d))
 	}
 	return messages
 }
 
 func roomToDM(room *chat.Room) *RoomDM {
+	fmt.Println(room.Messages)
 	dm := &RoomDM{
 		ID:        room.ID,
 		Name:      room.Name,
@@ -136,10 +140,10 @@ func messageToDM(message *chat.Message) *MessageDM {
 		CreatedAt: message.CreatedAt,
 	}
 }
-func messagesToDM(messages []chat.Message) []*MessageDM {
+func messagesToDM(messages []chat.Message) *[]*MessageDM {
 	dm := make([]*MessageDM, 0, len(messages))
 	for _, message := range messages {
 		dm = append(dm, messageToDM(&message))
 	}
-	return dm
+	return &dm
 }
