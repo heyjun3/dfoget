@@ -17,10 +17,6 @@ import (
 	"github.com/uptrace/bun/extra/bunslog"
 )
 
-func ptr[T any](v T) *T {
-	return &v
-}
-
 func setupTestDBConnection() *bun.DB {
 	dsn := "postgres://dev:dev@postgres:5432/test?sslmode=disable"
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
@@ -71,7 +67,7 @@ func TestChatRepository(t *testing.T) {
 		ID:        roomID,
 		Name:      "test room",
 		CreatedAt: time.Now().In(time.UTC).Round(time.Microsecond),
-		Messages:  ptr(messages),
+		Messages:  (messages),
 	}
 	t.Run("save room", func(t *testing.T) {
 		err := repo.Save(ctx, dmToRoom(&room))
@@ -96,10 +92,16 @@ func TestChatRepository(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, r)
 		dm := roomToDM(r)
-		assert.Equal(t, room.ID, dm.ID)
-		assert.Equal(t, room.Name, dm.Name)
-		assert.Equal(t, room.CreatedAt, dm.CreatedAt)
 		assert.Equal(t, &room, dm)
+	})
+
+	t.Run("get room without messages", func(t *testing.T) {
+		rooms, err := repo.GetRoomsWithoutMessage(ctx)
+
+		assert.NoError(t, err)
+		assert.Equal(t, room.ID, rooms[0].ID)
+		assert.Equal(t, room.Name, rooms[0].Name)
+		assert.Equal(t, room.CreatedAt, rooms[0].CreatedAt)
 	})
 
 	// t.Run("delete", func(t *testing.T) {
