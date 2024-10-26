@@ -2,6 +2,8 @@ package chat
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 )
 
 type CreateRoomRepositoryInterface interface {
@@ -21,7 +23,8 @@ func (s *CreateRoomService) Execute(ctx context.Context, name string) (
 	*Room, error,
 ) {
 	if exists, err := s.createRoomRepository.Exists(ctx, name); exists || err != nil {
-		return nil, err
+		slog.ErrorContext(ctx, err.Error())
+		return nil, fmt.Errorf("existing room name")
 	}
 	room, err := newRoom(name)
 	if err != nil {

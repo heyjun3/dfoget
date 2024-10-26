@@ -17,7 +17,7 @@ import (
 	"github.com/uptrace/bun/extra/bunslog"
 )
 
-func setupTestDBConnection() *bun.DB {
+func SetupTestDBConnection() *bun.DB {
 	dsn := "postgres://dev:dev@postgres:5432/test?sslmode=disable"
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
@@ -27,7 +27,7 @@ func setupTestDBConnection() *bun.DB {
 	return db
 }
 
-func resetDB(db *bun.DB, models []interface{}) {
+func ResetDB(db *bun.DB, models []interface{}) {
 	for _, model := range models {
 		_, err := db.NewDelete().Model(model).Where("1 = 1").Exec(context.Background())
 		if err != nil {
@@ -37,8 +37,8 @@ func resetDB(db *bun.DB, models []interface{}) {
 }
 
 func TestChatRepository(t *testing.T) {
-	db := setupTestDBConnection()
-	resetDB(db, []interface{}{(*MessageDM)(nil), (*RoomDM)(nil)})
+	db := SetupTestDBConnection()
+	ResetDB(db, []interface{}{(*MessageDM)(nil), (*RoomDM)(nil)})
 
 	repo := NewChatRepository(db)
 	roomID, _ := uuid.NewV7()
@@ -104,14 +104,14 @@ func TestChatRepository(t *testing.T) {
 		assert.Equal(t, room.CreatedAt, rooms[0].CreatedAt)
 	})
 
-	// t.Run("delete", func(t *testing.T) {
-	// 	err := repo.DeleteById(ctx, roomID)
+	t.Run("delete", func(t *testing.T) {
+		err := repo.DeleteById(ctx, roomID)
 
-	// 	assert.NoError(t, err)
+		assert.NoError(t, err)
 
-	// 	exist, err := repo.Exists(ctx, "test room")
+		exist, err := repo.Exists(ctx, "test room")
 
-	// 	assert.NoError(t, err)
-	// 	assert.False(t, exist)
-	// })
+		assert.NoError(t, err)
+		assert.False(t, exist)
+	})
 }

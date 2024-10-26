@@ -51,10 +51,15 @@ func (r *Room) AddMessage(ctx context.Context, text string) error {
 	return nil
 }
 
-func (r *Room) DeleteMessage(messageId uuid.UUID) {
+func (r *Room) DeleteMessage(ctx context.Context, messageId uuid.UUID) error {
+	userId, err := lib.GetSubValue(ctx)
+	if err != nil {
+		return err
+	}
 	r.Messages = slices.DeleteFunc(r.Messages, func(elem Message) bool {
-		return elem.ID.String() == messageId.String()
+		return elem.ID.String() == messageId.String() && elem.UserID == userId
 	})
+	return nil
 }
 
 type Message struct {
