@@ -4,7 +4,6 @@ github.com/aclements/go-perfevent v0.0.0-20240301234650-f7843625020f h1:JjxwchlO
 github.com/aclements/go-perfevent v0.0.0-20240301234650-f7843625020f/go.mod h1:tMDTce/yLLN/SK8gMOxQfnyeMeCg8KGzp0D1cbECEeo=
 github.com/cockroachdb/swiss v0.0.0-20240612210725-f4de07ae6964 h1:Ew0znI2JatzKy52N1iS5muUsHkf2UJuhocH7uFW7jjs=
 github.com/cockroachdb/swiss v0.0.0-20240612210725-f4de07ae6964/go.mod h1:yBRu/cnL4ks9bgy4vAASdjIW+/xMlFwuHKqtmh3GZQg=
-github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang-jwt/jwt/v5 v5.2.1 h1:OuVbFODueb089Lh128TAcimifWaLhJwVflnrgM17wHk=
@@ -35,8 +34,6 @@ github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc h1:9lRDQMhESg+zvGYm
 github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc/go.mod h1:bciPuU6GHm1iF1pBvUfxfsH0Wmnc2VbpgvbI9ZWuIRs=
 github.com/uptrace/bun v1.2.3 h1:6KDc6YiNlXde38j9ATKufb8o7MS8zllhAOeIyELKrk0=
 github.com/uptrace/bun v1.2.3/go.mod h1:8frYFHrO/Zol3I4FEjoXam0HoNk+t5k7aJRl3FXp0mk=
-github.com/uptrace/bun/dialect/pgdialect v1.2.1 h1:ceP99r03u+s8ylaDE/RzgcajwGiC76Jz3nS2ZgyPQ4M=
-github.com/uptrace/bun/dialect/pgdialect v1.2.1/go.mod h1:mv6B12cisvSc6bwKm9q9wcrr26awkZK8QXM+nso9n2U=
 github.com/uptrace/bun/dialect/pgdialect v1.2.3 h1:YyCxxqeL0lgFWRZzKCOt6mnxUsjqITcxSo0mLqgwMUA=
 github.com/uptrace/bun/dialect/pgdialect v1.2.3/go.mod h1:Vx9TscyEq1iN4tnirn6yYGwEflz0KG3rBZTBCLpKAjc=
 github.com/uptrace/bun/driver/pgdriver v1.2.1 h1:Cp6c1tKzbTIyL8o0cGT6cOhTsmQZdsUNhgcV51dsmLU=
