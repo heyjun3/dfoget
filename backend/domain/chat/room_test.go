@@ -18,7 +18,7 @@ func TestChat(t *testing.T) {
 		room.AddMessage(ctx, "test message")
 
 		assert.GreaterOrEqual(t, 1, len(room.Messages))
-		assert.Equal(t, "test message", room.Messages[0].Text)
+		assert.Equal(t, "test message", room.Messages[0].text)
 	})
 
 	t.Run("delete message", func(t *testing.T) {
@@ -29,10 +29,10 @@ func TestChat(t *testing.T) {
 		room.AddMessage(ctx, "test message 1")
 		room.AddMessage(ctx, "test message 2")
 
-		deleteId := room.Messages[0].ID
+		deleteId := room.Messages[0].id
 		room.DeleteMessage(ctx, deleteId)
 
 		assert.Equal(t, 1, len(room.Messages))
-		assert.Equal(t, "test message 2", room.Messages[0].Text)
+		assert.Equal(t, "test message 2", room.Messages[0].text)
 	})
 }

@@ -57,17 +57,17 @@ func (r *Room) DeleteMessage(ctx context.Context, messageId uuid.UUID) error {
 		return err
 	}
 	r.Messages = slices.DeleteFunc(r.Messages, func(elem Message) bool {
-		return elem.ID.String() == messageId.String() && elem.UserID == userId
+		return elem.id.String() == messageId.String() && elem.userID == userId
 	})
 	return nil
 }
 
 type Message struct {
-	ID        uuid.UUID
-	UserID    uuid.UUID
-	RoomID    uuid.UUID
-	Text      string
-	CreatedAt time.Time
+	id        uuid.UUID
+	userID    uuid.UUID
+	roomID    uuid.UUID
+	text      string
+	createdAt time.Time
 }
 
 func newMessage(userID, roomID uuid.UUID, text string) (*Message, error) {
@@ -76,10 +76,10 @@ func newMessage(userID, roomID uuid.UUID, text string) (*Message, error) {
 		return nil, err
 	}
 	return &Message{
-		ID:        id,
-		UserID:    userID,
-		RoomID:    roomID,
-		Text:      text,
-		CreatedAt: time.Now(),
+		id:        id,
+		userID:    userID,
+		roomID:    roomID,
+		text:      text,
+		createdAt: time.Now(),
 	}, nil
 }
