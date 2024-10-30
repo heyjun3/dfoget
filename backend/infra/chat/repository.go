@@ -103,13 +103,14 @@ func dmToRoomWithoutMessages(dm []*RoomDM) []*chat.RoomWithoutMessage {
 }
 
 func dmToMessage(dm *MessageDM) *chat.Message {
-	return &chat.Message{
-		ID:        dm.ID,
-		UserID:    dm.UserID,
-		RoomID:    dm.RoomID,
-		Text:      dm.Text,
-		CreatedAt: dm.CreatedAt,
-	}
+	m, _ := chat.NewMessage(
+		dm.UserID,
+		dm.RoomID,
+		dm.Text,
+		chat.WithID[*chat.Message](dm.ID),
+		chat.WithCreatedAt(dm.CreatedAt),
+	)
+	return m
 }
 
 func dmToMessages(dm []*MessageDM) []chat.Message {
@@ -131,12 +132,13 @@ func roomToDM(room *chat.Room) *RoomDM {
 }
 
 func messageToDM(message *chat.Message) *MessageDM {
+	id, userID, roomID, text, createdAt := message.Get()
 	return &MessageDM{
-		ID:        message.ID,
-		UserID:    message.UserID,
-		RoomID:    message.RoomID,
-		Text:      message.Text,
-		CreatedAt: message.CreatedAt,
+		ID:        id,
+		UserID:    userID,
+		RoomID:    roomID,
+		Text:      text,
+		CreatedAt: createdAt,
 	}
 }
 func messagesToDM(messages []chat.Message) []*MessageDM {

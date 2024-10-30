@@ -11,10 +11,10 @@ import (
 )
 
 type Room struct {
-	ID        uuid.UUID
-	Name      string
-	Messages  []Message
-	CreatedAt time.Time
+	id        uuid.UUID
+	name      string
+	messages  []Message
+	createdAt time.Time
 }
 
 type RoomWithoutMessage struct {
@@ -23,7 +23,9 @@ type RoomWithoutMessage struct {
 	CreatedAt time.Time
 }
 
-func newRoom(name string) (*Room, error) {
+type RoomOption func(r *Room) *Room
+
+func NewRoom(name string, opts ...RoomOption) (*Room, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
 		return nil, err
@@ -31,11 +33,15 @@ func newRoom(name string) (*Room, error) {
 	if name == "" {
 		return nil, fmt.Errorf("room name is required")
 	}
-	return &Room{
-		ID:        id,
-		Name:      name,
-		CreatedAt: time.Now(),
-	}, nil
+	r := &Room{
+		id:        id,
+		name:      name,
+		createdAt: time.Now(),
+	}
+	for _, opt := range opts {
+		r = opt(r)
+	}
+	return r, nil
 }
 
 func (r *Room) AddMessage(ctx context.Context, text string) error {
@@ -43,11 +49,11 @@ func (r *Room) AddMessage(ctx context.Context, text string) error {
 	if err != nil {
 		return err
 	}
-	message, err := newMessage(userId, r.ID, text)
+	message, err := NewMessage(userId, r.id, text)
 	if err != nil {
 		return err
 	}
-	r.Messages = append(r.Messages, *message)
+	r.messages = append(r.messages, *message)
 	return nil
 }
 
@@ -56,7 +62,7 @@ func (r *Room) DeleteMessage(ctx context.Context, messageId uuid.UUID) error {
 	if err != nil {
 		return err
 	}
-	r.Messages = slices.DeleteFunc(r.Messages, func(elem Message) bool {
+	r.messages = slices.DeleteFunc(r.messages, func(elem Message) bool {
 		return elem.id.String() == messageId.String() && elem.userID == userId
 	})
 	return nil
@@ -70,16 +76,48 @@ type Message struct {
 	createdAt time.Time
 }
 
-func newMessage(userID, roomID uuid.UUID, text string) (*Message, error) {
+type Identifiler interface {
+	SetID(uuid.UUID)
+}
+
+func (m *Message) SetID(id uuid.UUID) {
+	m.id = id
+}
+
+type Option[T Identifiler] func(v T) T
+type MessageOption func(*Message) *Message
+
+func WithID[T Identifiler](id uuid.UUID) Option[T] {
+	return func(m T) T{
+		m.SetID(id)
+		return m
+	}
+}
+func WithCreatedAt(createdAt time.Time) MessageOption {
+	return func(m *Message) *Message {
+		m.createdAt = createdAt
+		return m
+	}
+}
+
+func NewMessage(userID, roomID uuid.UUID, text string, opts ...MessageOption) (*Message, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
 		return nil, err
 	}
-	return &Message{
+	m := &Message{
 		id:        id,
 		userID:    userID,
 		roomID:    roomID,
 		text:      text,
 		createdAt: time.Now(),
-	}, nil
+	}
+	for _, opt := range opts {
+		m = opt(m)
+	}
+	return m, nil
+}
+
+func (m *Message) Get() (id, userID, roomID uuid.UUID, text string, createdAt time.Time) {
+	return m.id, m.userID, m.roomID, m.text, m.createdAt
 }

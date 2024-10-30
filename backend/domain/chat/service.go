@@ -26,7 +26,7 @@ func (s *CreateRoomService) Execute(ctx context.Context, name string) (
 		slog.ErrorContext(ctx, err.Error())
 		return nil, fmt.Errorf("existing room name")
 	}
-	room, err := newRoom(name)
+	room, err := NewRoom(name)
 	if err != nil {
 		return nil, err
 	}
