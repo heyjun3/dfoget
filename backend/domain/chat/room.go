@@ -25,6 +25,15 @@ type RoomWithoutMessage struct {
 
 type RoomOption func(r *Room) *Room
 
+func WithReconstructRoom(id uuid.UUID, messages []Message, createdAt time.Time) RoomOption {
+	return func(r *Room) *Room {
+		r.id = id
+		r.messages = messages
+		r.createdAt = createdAt
+		return r
+	}
+}
+
 func NewRoom(name string, opts ...RoomOption) (*Room, error) {
 	id, err := uuid.NewV7()
 	if err != nil {
@@ -68,6 +77,10 @@ func (r *Room) DeleteMessage(ctx context.Context, messageId uuid.UUID) error {
 	return nil
 }
 
+func (r *Room) Get() (id uuid.UUID, name string, messages []Message, createdAt time.Time) {
+	return r.id, r.name, r.messages, r.createdAt
+}
+
 type Message struct {
 	id        uuid.UUID
 	userID    uuid.UUID
@@ -76,25 +89,11 @@ type Message struct {
 	createdAt time.Time
 }
 
-type Identifiler interface {
-	SetID(uuid.UUID)
-}
-
-func (m *Message) SetID(id uuid.UUID) {
-	m.id = id
-}
-
-type Option[T Identifiler] func(v T) T
 type MessageOption func(*Message) *Message
 
-func WithID[T Identifiler](id uuid.UUID) Option[T] {
-	return func(m T) T{
-		m.SetID(id)
-		return m
-	}
-}
-func WithCreatedAt(createdAt time.Time) MessageOption {
+func WithReconstruct(id uuid.UUID, createdAt time.Time) MessageOption {
 	return func(m *Message) *Message {
+		m.id = id
 		m.createdAt = createdAt
 		return m
 	}
