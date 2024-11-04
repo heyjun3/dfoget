@@ -11,14 +11,30 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"slices"
 	"strings"
 
 	"github.com/cockroachdb/swiss"
 	"github.com/golang-jwt/jwt/v5"
 )
 
+func fn(str []string, ns []string) ([]string, []string) {
+	if len(str) == 0 {
+		return str, ns
+	}
+	if str[0] != "AAA" {
+		ns = append(ns, str[0])
+	}
+	nstr := slices.Delete(str, 0, 1)
+
+	return fn(nstr, ns)
+}
 func main() {
-	CheckVerifyJWT()
+	s := []string{"AAA", "BBB", "CCC"}
+
+	s1, s2 := fn(s, []string{})
+	fmt.Println("s1", s1)
+	fmt.Println("s2", s2)
 }
 
 func SwissTable() {
