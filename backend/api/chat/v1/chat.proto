@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package api.chat.v1;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/heyjun3/dforget/backend/gen/api/chat/v1;chatv1";
+
+message Room {
+  string id = 1;
+  string name = 2;
+}
+
+message GetRoomsRequest {
+  google.protobuf.Empty empty = 1;
+}
+message GetRoomsResponse {
+  repeated Room rooms = 1;
+}
+
+service ChatService {
+  rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse) {}
+}
