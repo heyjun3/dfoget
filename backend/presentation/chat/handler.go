@@ -41,3 +41,9 @@ func (c *ChatServiceHandler) GetRooms(ctx context.Context, req *connect.Request[
 		},
 	), nil
 }
+
+func (c *ChatServiceHandler) CreateRoom(ctx context.Context, req *connect.Request[chatv1.CreateRoomRequest]) (
+	*connect.Response[chatv1.CreateRoomResponse], error,
+) {
+	return nil, nil
+}

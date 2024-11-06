@@ -35,17 +35,21 @@ const (
 const (
 	// ChatServiceGetRoomsProcedure is the fully-qualified name of the ChatService's GetRooms RPC.
 	ChatServiceGetRoomsProcedure = "/api.chat.v1.ChatService/GetRooms"
+	// ChatServiceCreateRoomProcedure is the fully-qualified name of the ChatService's CreateRoom RPC.
+	ChatServiceCreateRoomProcedure = "/api.chat.v1.ChatService/CreateRoom"
 )
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	chatServiceServiceDescriptor        = v1.File_api_chat_v1_chat_proto.Services().ByName("ChatService")
-	chatServiceGetRoomsMethodDescriptor = chatServiceServiceDescriptor.Methods().ByName("GetRooms")
+	chatServiceServiceDescriptor          = v1.File_api_chat_v1_chat_proto.Services().ByName("ChatService")
+	chatServiceGetRoomsMethodDescriptor   = chatServiceServiceDescriptor.Methods().ByName("GetRooms")
+	chatServiceCreateRoomMethodDescriptor = chatServiceServiceDescriptor.Methods().ByName("CreateRoom")
 )
 
 // ChatServiceClient is a client for the api.chat.v1.ChatService service.
 type ChatServiceClient interface {
 	GetRooms(context.Context, *connect.Request[v1.GetRoomsRequest]) (*connect.Response[v1.GetRoomsResponse], error)
+	CreateRoom(context.Context, *connect.Request[v1.CreateRoomRequest]) (*connect.Response[v1.CreateRoomResponse], error)
 }
 
 // NewChatServiceClient constructs a client for the api.chat.v1.ChatService service. By default, it
@@ -64,12 +68,19 @@ func NewChatServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(chatServiceGetRoomsMethodDescriptor),
 			connect.WithClientOptions(opts...),
 		),
+		createRoom: connect.NewClient[v1.CreateRoomRequest, v1.CreateRoomResponse](
+			httpClient,
+			baseURL+ChatServiceCreateRoomProcedure,
+			connect.WithSchema(chatServiceCreateRoomMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // chatServiceClient implements ChatServiceClient.
 type chatServiceClient struct {
-	getRooms *connect.Client[v1.GetRoomsRequest, v1.GetRoomsResponse]
+	getRooms   *connect.Client[v1.GetRoomsRequest, v1.GetRoomsResponse]
+	createRoom *connect.Client[v1.CreateRoomRequest, v1.CreateRoomResponse]
 }
 
 // GetRooms calls api.chat.v1.ChatService.GetRooms.
@@ -77,9 +88,15 @@ func (c *chatServiceClient) GetRooms(ctx context.Context, req *connect.Request[v
 	return c.getRooms.CallUnary(ctx, req)
 }
 
+// CreateRoom calls api.chat.v1.ChatService.CreateRoom.
+func (c *chatServiceClient) CreateRoom(ctx context.Context, req *connect.Request[v1.CreateRoomRequest]) (*connect.Response[v1.CreateRoomResponse], error) {
+	return c.createRoom.CallUnary(ctx, req)
+}
+
 // ChatServiceHandler is an implementation of the api.chat.v1.ChatService service.
 type ChatServiceHandler interface {
 	GetRooms(context.Context, *connect.Request[v1.GetRoomsRequest]) (*connect.Response[v1.GetRoomsResponse], error)
+	CreateRoom(context.Context, *connect.Request[v1.CreateRoomRequest]) (*connect.Response[v1.CreateRoomResponse], error)
 }
 
 // NewChatServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -94,10 +111,18 @@ func NewChatServiceHandler(svc ChatServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(chatServiceGetRoomsMethodDescriptor),
 		connect.WithHandlerOptions(opts...),
 	)
+	chatServiceCreateRoomHandler := connect.NewUnaryHandler(
+		ChatServiceCreateRoomProcedure,
+		svc.CreateRoom,
+		connect.WithSchema(chatServiceCreateRoomMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/api.chat.v1.ChatService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ChatServiceGetRoomsProcedure:
 			chatServiceGetRoomsHandler.ServeHTTP(w, r)
+		case ChatServiceCreateRoomProcedure:
+			chatServiceCreateRoomHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -109,4 +134,8 @@ type UnimplementedChatServiceHandler struct{}
 
 func (UnimplementedChatServiceHandler) GetRooms(context.Context, *connect.Request[v1.GetRoomsRequest]) (*connect.Response[v1.GetRoomsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.chat.v1.ChatService.GetRooms is not implemented"))
+}
+
+func (UnimplementedChatServiceHandler) CreateRoom(context.Context, *connect.Request[v1.CreateRoomRequest]) (*connect.Response[v1.CreateRoomResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.chat.v1.ChatService.CreateRoom is not implemented"))
 }
