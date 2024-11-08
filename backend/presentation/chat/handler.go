@@ -2,6 +2,7 @@ package chat_handler
 
 import (
 	"context"
+	"log/slog"
 
 	"connectrpc.com/connect"
 	app "github.com/heyjun3/dforget/backend/app/chat"
@@ -45,5 +46,18 @@ func (c *ChatServiceHandler) GetRooms(ctx context.Context, req *connect.Request[
 func (c *ChatServiceHandler) CreateRoom(ctx context.Context, req *connect.Request[chatv1.CreateRoomRequest]) (
 	*connect.Response[chatv1.CreateRoomResponse], error,
 ) {
-	return nil, nil
+	room, err := c.roomUsecase.CreateRoom(ctx, req.Msg.Name)
+	if err != nil {
+		slog.InfoContext(ctx, err.Error())
+		return nil, connect.NewError(connect.CodeInternal, nil)
+	}
+	id, name, _, _ := room.Get()
+	return connect.NewResponse(
+		&chatv1.CreateRoomResponse{
+			Room: &chatv1.Room{
+				Id:   id.String(),
+				Name: name,
+			},
+		},
+	), nil
 }
