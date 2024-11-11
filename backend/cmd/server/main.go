@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log/slog"
 	"net/http"
 
 	"golang.org/x/net/http2"
@@ -22,6 +23,7 @@ func main() {
 		AllowedHeaders:   []string{"*"},
 		AllowCredentials: true,
 	})
+	slog.Info("start listen. port: 8080")
 	http.ListenAndServe(
 		"dev:8080",
 		c.Handler((h2c.NewHandler(mux, &http2.Server{}))),
