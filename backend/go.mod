@@ -1,6 +1,6 @@
 module github.com/heyjun3/dforget/backend
 
-go 1.22.5
+go 1.23.3
 
 require (
 	connectrpc.com/connect v1.16.2
