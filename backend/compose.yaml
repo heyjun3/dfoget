@@ -1,6 +1,6 @@
 services:
   dev:
-    image: golang:1.22.5-bookworm
+    image: golang:1.23.3
     command: tail -f /dev/null
     environment:
       - DB_USER=${DB_USER}

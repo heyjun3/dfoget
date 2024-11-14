@@ -11,6 +11,12 @@ message Room {
   string name = 2;
 }
 
+message Message {
+  string id = 1;
+  string user_id = 2;
+  string text = 3;
+}
+
 message GetRoomsRequest {
   google.protobuf.Empty empty = 1;
 }
@@ -18,14 +24,23 @@ message GetRoomsResponse {
   repeated Room rooms = 1;
 }
 
+message GetRoomRequest {
+  string id = 1;
+}
+message GetRoomResponse {
+  Room room = 1;
+  repeated Message messages = 2;
+}
+
 message CreateRoomRequest {
-    string name = 1;
+  string name = 1;
 }
 message CreateRoomResponse {
-    Room room = 1;
+  Room room = 1;
 }
 
 service ChatService {
   rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse) {}
+  rpc GetRoom(GetRoomRequest) returns (GetRoomResponse) {}
   rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse) {}
 }
