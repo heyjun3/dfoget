@@ -8,8 +8,12 @@ package server
 
 import (
 	"database/sql"
+	chat4 "github.com/heyjun3/dforget/backend/app/chat"
 	memo2 "github.com/heyjun3/dforget/backend/app/memo"
+	chat3 "github.com/heyjun3/dforget/backend/domain/chat"
 	"github.com/heyjun3/dforget/backend/domain/memo"
+	chat2 "github.com/heyjun3/dforget/backend/infra/chat"
+	"github.com/heyjun3/dforget/backend/presentation/chat"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -24,6 +28,14 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	memoUsecase := memo2.NewMemoUsecase(registerMemoService, memoRepository)
 	memoHandler := NewMemoHandler(memoRepository, registerMemoService, memoUsecase)
 	return memoHandler
+}
+
+func initializeChatHandler(db *bun.DB) *chat.ChatServiceHandler {
+	chatRepository := chat2.NewChatRepository(db)
+	createRoomService := chat3.NewCreateRoomService(chatRepository)
+	roomUsecase := chat4.NewRoomUsecase(createRoomService, chatRepository)
+	chatServiceHandler := chat.NewChatServiceHandler(roomUsecase)
+	return chatServiceHandler
 }
 
 func initializeOIDCHandler(conf Config) *OIDCHandler {

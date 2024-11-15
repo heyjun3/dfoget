@@ -20,11 +20,11 @@ type RoomUsecase struct {
 }
 
 func NewRoomUsecase(
-	createRoomService chat.CreateRoomService,
+	createRoomService *chat.CreateRoomService,
 	roomRepository RoomRepository,
 ) *RoomUsecase {
 	return &RoomUsecase{
-		createRoomService: createRoomService,
+		createRoomService: *createRoomService,
 		roomRepository:    roomRepository,
 	}
 }

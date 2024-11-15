@@ -1,4 +1,4 @@
-package chat_handler
+package chat
 
 import (
 	"context"
@@ -17,9 +17,9 @@ type ChatServiceHandler struct {
 	roomUsecase app.RoomUsecase
 }
 
-func NewChatServiceHandler(roomUsecase app.RoomUsecase) *ChatServiceHandler {
+func NewChatServiceHandler(roomUsecase *app.RoomUsecase) *ChatServiceHandler {
 	return &ChatServiceHandler{
-		roomUsecase: roomUsecase,
+		roomUsecase: *roomUsecase,
 	}
 }
 
