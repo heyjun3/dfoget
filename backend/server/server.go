@@ -6,6 +6,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
+	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 )
 
@@ -22,9 +23,14 @@ func loggerMiddleware(next http.Handler) http.Handler {
 func New(conf Config) *http.ServeMux {
 	mux := http.NewServeMux()
 	db := InitDBConn(conf)
-	memo := initializeMemoHandler(db)
 	interceptors := connect.WithInterceptors(NewAuthInterceptorV2(conf))
+
+	memo := initializeMemoHandler(db)
 	path, handler := memov1connect.NewMemoServiceHandler(memo, interceptors)
+	mux.Handle(path, loggerMiddleware(handler))
+
+	chat := initializeChatHandler(db)
+	path, handler = chatv1connect.NewChatServiceHandler(chat, interceptors)
 	mux.Handle(path, loggerMiddleware(handler))
 
 	oidcHandler := initializeOIDCHandler(conf)
