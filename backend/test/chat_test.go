@@ -1,10 +1,13 @@
 package test_test
 
 import (
+	"net/http/httptest"
 	"testing"
 
 	"github.com/heyjun3/dforget/backend/server"
 	"github.com/heyjun3/dforget/backend/test"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 func TestChatHandler(t *testing.T) {
