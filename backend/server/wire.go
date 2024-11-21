@@ -13,12 +13,8 @@ import (
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
 
-	chatapp "github.com/heyjun3/dforget/backend/app/chat"
 	memoapp "github.com/heyjun3/dforget/backend/app/memo"
-	chatdomain "github.com/heyjun3/dforget/backend/domain/chat"
 	"github.com/heyjun3/dforget/backend/domain/memo"
-	chatinfra "github.com/heyjun3/dforget/backend/infra/chat"
-	"github.com/heyjun3/dforget/backend/presentation/chat"
 )
 
 func initializeMemoHandler(db *bun.DB) *MemoHandler {
@@ -29,18 +25,6 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 		NewMemoHandler,
 		wire.Bind(new(memo.MemoRepositoryInterface), new(*MemoRepository)),
 		wire.Bind(new(memoapp.MemoRepositoryInterface), new(*MemoRepository)),
-	)
-	return nil
-}
-
-func initializeChatHandler(db *bun.DB) *chat.ChatServiceHandler {
-	wire.Build(
-		chat.NewChatServiceHandler,
-		chatapp.NewRoomUsecase,
-		chatdomain.NewCreateRoomService,
-		chatinfra.NewChatRepository,
-		wire.Bind(new(chatdomain.CreateRoomRepositoryInterface), new(*chatinfra.ChatRepository)),
-		wire.Bind(new(chatapp.RoomRepository), new(*chatinfra.ChatRepository)),
 	)
 	return nil
 }
