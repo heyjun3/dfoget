@@ -1,7 +1,6 @@
 //go:build wireinject
 // +build wireinject
 
-//
 package chat
 
 import (
@@ -13,7 +12,7 @@ import (
 	chatinfra "github.com/heyjun3/dforget/backend/infra/chat"
 )
 
-func initializeChatHandler(db *bun.DB) *ChatServiceHandler {
+func InitChatHandler(db *bun.DB) *ChatServiceHandler {
 	wire.Build(
 		NewChatServiceHandler,
 		chatapp.NewRoomUsecase,

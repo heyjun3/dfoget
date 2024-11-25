@@ -15,7 +15,7 @@ import (
 
 // Injectors from wire.go:
 
-func initializeChatHandler(db *bun.DB) *ChatServiceHandler {
+func InitChatHandler(db *bun.DB) *ChatServiceHandler {
 	chatRepository := chat.NewChatRepository(db)
 	createRoomService := chat2.NewCreateRoomService(chatRepository)
 	roomUsecase := chat3.NewRoomUsecase(createRoomService, chatRepository)
