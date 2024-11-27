@@ -1,6 +1,7 @@
 package chat_test
 
 import (
+	"fmt"
 	"context"
 	"database/sql"
 	"net/http"
@@ -43,14 +44,24 @@ func TestChatHandler(t *testing.T) {
 		srv.URL,
 	)
 
-	t.Run("get rooms", func(t *testing.T) {
+	t.Run("create room", func(t *testing.T) {
+		createRes, err := client.CreateRoom(
+			context.Background(),
+			connect.NewRequest(&chatv1.CreateRoomRequest{
+				Name: "test room",
+			}),
+		)
+		assert.NoError(t, err)
+		fmt.Println("res", createRes.Msg.Room)
+		assert.Equal(t, "test room", createRes.Msg.Room.Name)
+
 		res, err := client.GetRooms(
 			context.Background(),
 			connect.NewRequest(&chatv1.GetRoomsRequest{}),
 		)
 
 		assert.NoError(t, err)
-		assert.Equal(t, 0, len(res.Msg.Rooms))
+		assert.Equal(t, 1, len(res.Msg.Rooms))
 	})
 
 }
