@@ -1,9 +1,9 @@
 package chat_test
 
 import (
-	"fmt"
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,6 +11,7 @@ import (
 	"connectrpc.com/connect"
 	chatv1 "github.com/heyjun3/dforget/backend/gen/api/chat/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
+	model "github.com/heyjun3/dforget/backend/infra/chat"
 	"github.com/heyjun3/dforget/backend/presentation/chat"
 	"github.com/heyjun3/dforget/backend/server"
 	"github.com/stretchr/testify/assert"
@@ -37,7 +38,10 @@ func newTestServer() (*httptest.Server, *bun.DB, func()) {
 }
 
 func TestChatHandler(t *testing.T) {
-	srv, _, tireDown := newTestServer()
+	srv, db, tireDown := newTestServer()
+	if _, err := db.NewDelete().Model(&model.RoomDM{}).Where("1 = 1").Exec(context.Background()); err != nil {
+		panic(err)
+	}
 	defer tireDown()
 	client := chatv1connect.NewChatServiceClient(
 		http.DefaultClient,
@@ -62,6 +66,17 @@ func TestChatHandler(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, 1, len(res.Msg.Rooms))
-	})
+		assert.Equal(t, "test room", res.Msg.Rooms[0].Name)
 
+		getRoomRes, err := client.GetRoom(
+			context.Background(),
+			connect.NewRequest(&chatv1.GetRoomRequest{
+				Id: createRes.Msg.Room.Id,
+			}),
+		)
+
+		assert.NoError(t, err)
+		assert.Equal(t, "test room", getRoomRes.Msg.GetRoom().Name)
+		assert.Equal(t, 0, len(getRoomRes.Msg.GetMessages()))
+	})
 }

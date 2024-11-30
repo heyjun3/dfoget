@@ -46,7 +46,9 @@ func (r *ChatRepository) Save(ctx context.Context, room *chat.Room) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.db.NewInsert().Model(&dm.Messages).Exec(ctx)
+	if len(dm.Messages) > 0 {
+		_, err = r.db.NewInsert().Model(&dm.Messages).Exec(ctx)
+	}
 	return err
 }
 

@@ -8,6 +8,7 @@ import (
 
 type CreateRoomRepositoryInterface interface {
 	Exists(context.Context, string) (bool, error)
+	Save(context.Context, *Room) error
 }
 type CreateRoomService struct {
 	createRoomRepository CreateRoomRepositoryInterface
@@ -22,13 +23,20 @@ func NewCreateRoomService(createRoomRepository CreateRoomRepositoryInterface) *C
 func (s *CreateRoomService) Execute(ctx context.Context, name string) (
 	*Room, error,
 ) {
-	if exists, err := s.createRoomRepository.Exists(ctx, name); exists || err != nil {
-		slog.ErrorContext(ctx, err.Error())
+	exists, err := s.createRoomRepository.Exists(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
 		return nil, fmt.Errorf("existing room name")
 	}
 	room, err := NewRoom(name)
 	if err != nil {
 		return nil, err
+	}
+	if err := s.createRoomRepository.Save(ctx, room); err != nil {
+		slog.WarnContext(ctx, err.Error())
+		return nil, fmt.Errorf("failed to save room")
 	}
 	return room, err
 }
