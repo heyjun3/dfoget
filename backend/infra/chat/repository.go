@@ -27,7 +27,6 @@ type MessageDM struct {
 	CreatedAt     time.Time `bun:"type:timestamp,notnull,default:now()"`
 }
 
-var _ chat.CreateRoomRepositoryInterface = (*ChatRepository)(nil)
 var _ appchat.RoomRepository = (*ChatRepository)(nil)
 
 type ChatRepository struct {

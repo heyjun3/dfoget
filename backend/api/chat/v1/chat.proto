@@ -13,7 +13,7 @@ message Room {
 
 message Message {
   string id = 1;
-  string user_id = 2;
+  optional string user_id = 2;
   string text = 3;
 }
 
@@ -39,8 +39,16 @@ message CreateRoomResponse {
   Room room = 1;
 }
 
+message SendMessageRequest {
+  Message message = 1;
+}
+message SendMessageResponse {
+  Message message = 1;
+}
+
 service ChatService {
   rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse) {}
   rpc GetRoom(GetRoomRequest) returns (GetRoomResponse) {}
   rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse) {}
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
 }

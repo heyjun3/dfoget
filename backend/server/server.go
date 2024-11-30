@@ -6,8 +6,10 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	// "github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
+
+	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
+	"github.com/heyjun3/dforget/backend/presentation/chat"
 )
 
 func loggerMiddleware(next http.Handler) http.Handler {
@@ -29,9 +31,9 @@ func New(conf Config) *http.ServeMux {
 	path, handler := memov1connect.NewMemoServiceHandler(memo, interceptors)
 	mux.Handle(path, loggerMiddleware(handler))
 
-	// chat := initializeChatHandler(db)
-	// path, handler = chatv1connect.NewChatServiceHandler(chat, interceptors)
-	// mux.Handle(path, loggerMiddleware(handler))
+	chat := chat.InitChatHandler(db)
+	path, handler = chatv1connect.NewChatServiceHandler(chat, interceptors)
+	mux.Handle(path, loggerMiddleware(handler))
 
 	oidcHandler := initializeOIDCHandler(conf)
 	mux.HandleFunc("GET /oidc", oidcHandler.recieveRedirect)

@@ -2,37 +2,48 @@ package chat
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/heyjun3/dforget/backend/domain/chat"
 )
 
 type RoomRepository interface {
-	DeleteById(context.Context, uuid.UUID) error
+	Save(context.Context, *chat.Room) error
 	GetRoom(context.Context, uuid.UUID) (*chat.Room, error)
 	GetRoomsWithoutMessage(context.Context) ([]*chat.RoomWithoutMessage, error)
-	Save(context.Context, *chat.Room) error
+	Exists(context.Context, string) (bool, error)
+	DeleteById(context.Context, uuid.UUID) error
 }
 
 type RoomUsecase struct {
-	createRoomService chat.CreateRoomService
-	roomRepository    RoomRepository
+	roomRepository RoomRepository
 }
 
 func NewRoomUsecase(
-	createRoomService *chat.CreateRoomService,
 	roomRepository RoomRepository,
 ) *RoomUsecase {
 	return &RoomUsecase{
-		createRoomService: *createRoomService,
-		roomRepository:    roomRepository,
+		roomRepository: roomRepository,
 	}
 }
 
 func (u *RoomUsecase) CreateRoom(ctx context.Context, name string) (*chat.Room, error) {
-	room, err := u.createRoomService.Execute(ctx, name)
+	exists, err := u.roomRepository.Exists(ctx, name)
 	if err != nil {
 		return nil, err
+	}
+	if exists {
+		return nil, fmt.Errorf("existing room name")
+	}
+	room, err := chat.NewRoom(name)
+	if err != nil {
+		return nil, err
+	}
+	if err := u.roomRepository.Save(ctx, room); err != nil {
+		slog.WarnContext(ctx, err.Error())
+		return nil, fmt.Errorf("failed to save room")
 	}
 	return room, err
 }

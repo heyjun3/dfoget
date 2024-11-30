@@ -7,8 +7,7 @@
 package chat
 
 import (
-	chat3 "github.com/heyjun3/dforget/backend/app/chat"
-	chat2 "github.com/heyjun3/dforget/backend/domain/chat"
+	chat2 "github.com/heyjun3/dforget/backend/app/chat"
 	"github.com/heyjun3/dforget/backend/infra/chat"
 	"github.com/uptrace/bun"
 )
@@ -17,8 +16,7 @@ import (
 
 func InitChatHandler(db *bun.DB) *ChatServiceHandler {
 	chatRepository := chat.NewChatRepository(db)
-	createRoomService := chat2.NewCreateRoomService(chatRepository)
-	roomUsecase := chat3.NewRoomUsecase(createRoomService, chatRepository)
+	roomUsecase := chat2.NewRoomUsecase(chatRepository)
 	chatServiceHandler := NewChatServiceHandler(roomUsecase)
 	return chatServiceHandler
 }

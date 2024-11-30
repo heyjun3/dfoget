@@ -15,7 +15,7 @@ func main() {
 	mux := server.New(server.NewConfig())
 
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedOrigins: []string{"http://localhost:3000", "https://*.trycloudflare.com"},
 		AllowedMethods: []string{
 			http.MethodOptions,
 			http.MethodPost,
