@@ -63,11 +63,17 @@ func (u *RoomUsecase) DeleteRoom(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
-func (u *RoomUsecase) AddMessage(ctx context.Context, roomId uuid.UUID, text string) error {
+func (u *RoomUsecase) AddMessage(ctx context.Context, roomId uuid.UUID, text string) (*chat.Message, error) {
 	room, err := u.roomRepository.GetRoom(ctx, roomId)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	room.AddMessage(ctx, text)
-	return u.roomRepository.Save(ctx, room)
+	message, err := room.AddMessage(ctx, text)
+	if err != nil {
+		return nil, err
+	}
+	if err := u.roomRepository.Save(ctx, room); err != nil {
+		return nil, err
+	}
+	return message, nil
 }

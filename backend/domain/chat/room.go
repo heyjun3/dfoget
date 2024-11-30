@@ -53,17 +53,17 @@ func NewRoom(name string, opts ...RoomOption) (*Room, error) {
 	return r, nil
 }
 
-func (r *Room) AddMessage(ctx context.Context, text string) error {
+func (r *Room) AddMessage(ctx context.Context, text string) (*Message, error) {
 	userId, err := lib.GetSubValue(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	message, err := NewMessage(userId, r.id, text)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	r.messages = append(r.messages, *message)
-	return nil
+	return message, nil
 }
 
 func (r *Room) DeleteMessage(ctx context.Context, messageId uuid.UUID) error {
