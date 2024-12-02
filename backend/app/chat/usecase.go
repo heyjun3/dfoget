@@ -70,6 +70,7 @@ func (u *RoomUsecase) AddMessage(ctx context.Context, roomId uuid.UUID, text str
 	}
 	message, err := room.AddMessage(ctx, text)
 	if err != nil {
+		slog.Info("test", "err", err)
 		return nil, err
 	}
 	if err := u.roomRepository.Save(ctx, room); err != nil {

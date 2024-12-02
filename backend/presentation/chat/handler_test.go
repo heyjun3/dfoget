@@ -9,9 +9,12 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	"github.com/google/uuid"
+
 	chatv1 "github.com/heyjun3/dforget/backend/gen/api/chat/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	model "github.com/heyjun3/dforget/backend/infra/chat"
+	"github.com/heyjun3/dforget/backend/lib"
 	"github.com/heyjun3/dforget/backend/presentation/chat"
 	"github.com/heyjun3/dforget/backend/server"
 	"github.com/stretchr/testify/assert"
@@ -49,8 +52,10 @@ func TestChatHandler(t *testing.T) {
 	)
 
 	t.Run("create room", func(t *testing.T) {
+		userID, _ := uuid.NewV7()
+		ctx := lib.SetSubKey(context.Background(), userID.String())
 		createRes, err := client.CreateRoom(
-			context.Background(),
+			ctx,
 			connect.NewRequest(&chatv1.CreateRoomRequest{
 				Name: "test room",
 			}),
@@ -60,7 +65,7 @@ func TestChatHandler(t *testing.T) {
 		assert.Equal(t, "test room", createRes.Msg.Room.Name)
 
 		res, err := client.GetRooms(
-			context.Background(),
+			ctx,
 			connect.NewRequest(&chatv1.GetRoomsRequest{}),
 		)
 
@@ -69,7 +74,7 @@ func TestChatHandler(t *testing.T) {
 		assert.Equal(t, "test room", res.Msg.Rooms[0].Name)
 
 		getRoomRes, err := client.GetRoom(
-			context.Background(),
+			ctx,
 			connect.NewRequest(&chatv1.GetRoomRequest{
 				Id: createRes.Msg.Room.Id,
 			}),
@@ -78,5 +83,15 @@ func TestChatHandler(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "test room", getRoomRes.Msg.GetRoom().Name)
 		assert.Equal(t, 0, len(getRoomRes.Msg.GetMessages()))
+
+		sendRes, err := client.SendMessage(ctx, connect.NewRequest(
+			&chatv1.SendMessageRequest{
+				RoomId: createRes.Msg.Room.Id,
+				Text:   "test text",
+			},
+		))
+
+		assert.NoError(t, err)
+		assert.Equal(t, "test text", sendRes.Msg.Message.Text)
 	})
 }
