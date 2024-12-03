@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 	"time"
 
@@ -42,19 +43,22 @@ func NewChatRepository(db *bun.DB) *ChatRepository {
 
 func (r *ChatRepository) Save(ctx context.Context, room *chat.Room) error {
 	dm := roomToDM(room)
-	_, err := r.db.NewInsert().
-		Model(dm).
-		On("CONFLICT (id) DO UPDATE").
-		Set(strings.Join([]string{
-			"name = EXCLUDED.name",
-		}, ",")).
-		Exec(ctx)
-	if err != nil {
+	err := r.db.RunInTx(ctx, &sql.TxOptions{}, func(ctx context.Context, tx bun.Tx) error {
+		_, err := tx.NewInsert().
+			Model(dm).
+			On("CONFLICT (id) DO UPDATE").
+			Set(strings.Join([]string{
+				"name = EXCLUDED.name",
+			}, ",")).
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
+		if len(dm.Messages) > 0 {
+			_, err = tx.NewInsert().Model(&dm.Messages).Exec(ctx)
+		}
 		return err
-	}
-	if len(dm.Messages) > 0 {
-		_, err = r.db.NewInsert().Model(&dm.Messages).Exec(ctx)
-	}
+	})
 	return err
 }
 
