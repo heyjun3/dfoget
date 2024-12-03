@@ -10,7 +10,6 @@ import (
 	app "github.com/heyjun3/dforget/backend/app/chat"
 	chatv1 "github.com/heyjun3/dforget/backend/gen/api/chat/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
-	"github.com/heyjun3/dforget/backend/lib"
 )
 
 var _ chatv1connect.ChatServiceHandler = (*ChatServiceHandler)(nil)
@@ -102,17 +101,18 @@ func (c *ChatServiceHandler) CreateRoom(ctx context.Context, req *connect.Reques
 func (c *ChatServiceHandler) SendMessage(ctx context.Context, req *connect.Request[chatv1.SendMessageRequest]) (
 	*connect.Response[chatv1.SendMessageResponse], error,
 ) {
-	userID, _ := lib.GetSubValue(ctx)
-	slog.Info("test", "userId", userID.String())
 	roomID, err := uuid.Parse(req.Msg.RoomId)
 	if err != nil {
+		slog.InfoContext(ctx, err.Error())
 		return nil, connect.NewError(connect.CodeInternal, nil)
 	}
 	message, err := c.roomUsecase.AddMessage(ctx, roomID, req.Msg.Text)
 	if err != nil {
+		slog.InfoContext(ctx, err.Error())
 		return nil, connect.NewError(connect.CodeInternal, nil)
 	}
 	id, userID, _, text, _ := message.Get()
+	slog.Info("test", "text", text)
 	return connect.NewResponse(
 		&chatv1.SendMessageResponse{
 			Message: &chatv1.Message{

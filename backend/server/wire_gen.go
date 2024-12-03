@@ -18,7 +18,7 @@ import (
 
 // Injectors from wire.go:
 
-func initializeMemoHandler(db *bun.DB) *MemoHandler {
+func InitializeMemoHandler(db *bun.DB) *MemoHandler {
 	memoRepository := NewMemoRepository(db)
 	registerMemoService := memo.NewRegisterMemoService(memoRepository)
 	memoUsecase := memo2.NewMemoUsecase(registerMemoService, memoRepository)
@@ -26,7 +26,7 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	return memoHandler
 }
 
-func initializeOIDCHandler(conf Config) *OIDCHandler {
+func InitializeOIDCHandler(conf Config) *OIDCHandler {
 	serverHttpClient := provideHttpClient()
 	oidcHandler := NewOIDCHandler(conf, serverHttpClient)
 	return oidcHandler

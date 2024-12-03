@@ -17,7 +17,7 @@ import (
 	"github.com/heyjun3/dforget/backend/domain/memo"
 )
 
-func initializeMemoHandler(db *bun.DB) *MemoHandler {
+func InitializeMemoHandler(db *bun.DB) *MemoHandler {
 	wire.Build(
 		NewMemoRepository,
 		memo.NewRegisterMemoService,
@@ -29,7 +29,7 @@ func initializeMemoHandler(db *bun.DB) *MemoHandler {
 	return nil
 }
 
-func initializeOIDCHandler(conf Config) *OIDCHandler {
+func InitializeOIDCHandler(conf Config) *OIDCHandler {
 	wire.Build(
 		provideHttpClient,
 		NewOIDCHandler,

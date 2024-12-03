@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,7 +42,13 @@ func NewChatRepository(db *bun.DB) *ChatRepository {
 
 func (r *ChatRepository) Save(ctx context.Context, room *chat.Room) error {
 	dm := roomToDM(room)
-	_, err := r.db.NewInsert().Model(dm).Exec(ctx)
+	_, err := r.db.NewInsert().
+		Model(dm).
+		On("CONFLICT (id) DO UPDATE").
+		Set(strings.Join([]string{
+			"name = EXCLUDED.name",
+		}, ",")).
+		Exec(ctx)
 	if err != nil {
 		return err
 	}

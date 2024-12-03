@@ -1,4 +1,4 @@
-package server
+package presentation
 
 import (
 	"log/slog"
@@ -10,6 +10,7 @@ import (
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 	"github.com/heyjun3/dforget/backend/presentation/chat"
+	"github.com/heyjun3/dforget/backend/server"
 )
 
 func loggerMiddleware(next http.Handler) http.Handler {
@@ -22,12 +23,12 @@ func loggerMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func New(conf Config) *http.ServeMux {
+func NewServer(conf server.Config) *http.ServeMux {
 	mux := http.NewServeMux()
-	db := InitDBConn(conf)
-	interceptors := connect.WithInterceptors(NewAuthInterceptorV2(conf))
+	db := server.InitDBConn(conf)
+	interceptors := connect.WithInterceptors(server.NewAuthInterceptorV2(conf))
 
-	memo := InitializeMemoHandler(db)
+	memo := server.InitializeMemoHandler(db)
 	path, handler := memov1connect.NewMemoServiceHandler(memo, interceptors)
 	mux.Handle(path, loggerMiddleware(handler))
 
@@ -35,7 +36,7 @@ func New(conf Config) *http.ServeMux {
 	path, handler = chatv1connect.NewChatServiceHandler(chat, interceptors)
 	mux.Handle(path, loggerMiddleware(handler))
 
-	oidcHandler := InitializeOIDCHandler(conf)
+	oidcHandler := server.InitializeOIDCHandler(conf)
 	mux.HandleFunc("GET /oidc", oidcHandler.RecieveRedirect)
 
 	return mux

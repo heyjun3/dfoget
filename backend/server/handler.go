@@ -186,7 +186,7 @@ func NewOIDCHandler(conf Config, client httpClient) *OIDCHandler {
 	}
 }
 
-func (h OIDCHandler) recieveRedirect(w http.ResponseWriter, r *http.Request) {
+func (h OIDCHandler) RecieveRedirect(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	slog.InfoContext(ctx, "recieve oidc redirect")
 	code := r.URL.Query().Get("code")
