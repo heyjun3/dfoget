@@ -2,42 +2,29 @@ package chat_test
 
 import (
 	"context"
-	// "database/sql"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/uptrace/bun"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 
 	chatv1 "github.com/heyjun3/dforget/backend/gen/api/chat/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	model "github.com/heyjun3/dforget/backend/infra/chat"
-	"github.com/heyjun3/dforget/backend/lib"
-	"github.com/heyjun3/dforget/backend/test"
-
 	"github.com/heyjun3/dforget/backend/presentation"
-	// "github.com/heyjun3/dforget/backend/presentation/chat"
 	"github.com/heyjun3/dforget/backend/server"
-	"github.com/stretchr/testify/assert"
-	"github.com/uptrace/bun"
-	// "github.com/uptrace/bun/dialect/pgdialect"
-	// "github.com/uptrace/bun/driver/pgdriver"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
+	"github.com/heyjun3/dforget/backend/test"
 )
 
 func newTestServer() (*httptest.Server, *bun.DB, func()) {
 	conf := server.NewConfig(server.WithDBName("test"), server.WithPubKey(test.PublicKey))
 	bundb := server.InitDBConn(conf)
 	mux := presentation.NewServer(conf)
-	// sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(conf.DBDSN())))
-	// bundb := bun.NewDB(sqldb, pgdialect.New())
-	// chat := chat.InitChatHandler(bundb)
-	// mux := http.NewServeMux()
-	// path, handler := chatv1connect.NewChatServiceHandler(chat)
-	// mux.Handle(path, handler)
 	srv := httptest.NewServer(h2c.NewHandler(mux, &http2.Server{}))
 	return srv, bundb, func() {
 		srv.Close()
@@ -57,9 +44,8 @@ func TestChatHandler(t *testing.T) {
 		connect.WithInterceptors(test.NewSetCookieInterceptor()),
 	)
 
-	t.Run("create room", func(t *testing.T) {
-		userID, _ := uuid.NewV7()
-		ctx := lib.SetSubKey(context.Background(), userID.String())
+	t.Run("create room and get room", func(t *testing.T) {
+		ctx := context.Background()
 		createRes, err := client.CreateRoom(
 			ctx,
 			connect.NewRequest(&chatv1.CreateRoomRequest{

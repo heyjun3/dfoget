@@ -9,22 +9,27 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
-	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
-	"github.com/heyjun3/dforget/backend/server"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+
+	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
+	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
+	"github.com/heyjun3/dforget/backend/server"
+	"github.com/heyjun3/dforget/backend/test"
 )
 
 func TestMemoHandler(t *testing.T) {
-	conf := server.NewConfig(server.WithDBName("test"), server.WithPubKey(publicKey))
-	ResetModel(server.InitDBConn(conf))
+	conf := server.NewConfig(
+		server.WithDBName("test"),
+		server.WithPubKey(test.PublicKey),
+	)
+	test.ResetModel(server.InitDBConn(conf))
 	mux := server.New(conf)
 	srv := httptest.NewServer(h2c.NewHandler(mux, &http2.Server{}))
 	defer srv.Close()
 
-	interceptors := connect.WithInterceptors(NewSetCookieInterceptor())
+	interceptors := connect.WithInterceptors(test.NewSetCookieInterceptor())
 	client := memov1connect.NewMemoServiceClient(
 		http.DefaultClient,
 		srv.URL,
