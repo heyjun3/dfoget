@@ -12,8 +12,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/heyjun3/dforget/backend/lib"
 	cfg "github.com/heyjun3/dforget/backend/config"
+	"github.com/heyjun3/dforget/backend/lib"
 )
 
 const (
@@ -77,7 +77,7 @@ type authInterceptor struct {
 }
 
 func NewAuthInterceptorV2(conf cfg.Config) *authInterceptor {
-	publicKey, err := NewPublicKey(conf.Oidc.Pubkey)
+	publicKey, err := NewPublicKey(conf.OIDC.Pubkey)
 	if err != nil {
 		slog.ErrorContext(context.Background(), "failed load pub key error")
 		panic(err)
@@ -152,7 +152,7 @@ func (i *authInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc
 }
 
 func NewAuthInterceptor(conf cfg.Config) connect.UnaryInterceptorFunc {
-	publicKey, err := NewPublicKey(conf.oidc.pubkey)
+	publicKey, err := NewPublicKey(conf.OIDC.Pubkey)
 	if err != nil {
 		panic(err)
 	}

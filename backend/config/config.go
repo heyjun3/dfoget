@@ -7,8 +7,8 @@ import (
 
 type Config struct {
 	db          DBConfig
-	Oidc        OIDCConfig
-	frontEndURL string
+	OIDC        OIDCConfig
+	FrontEndURL string
 }
 
 type DBConfig struct {
@@ -20,11 +20,11 @@ type DBConfig struct {
 }
 
 type OIDCConfig struct {
-	redirectUri  string
-	clientId     string
-	clientSecret string
-	tokenUrl     string
-	pubkey       string
+	RedirectUri  string
+	ClientId     string
+	ClientSecret string
+	TokenUrl     string
+	Pubkey       string
 }
 
 type ConfigOption func(Config) Config
@@ -42,14 +42,14 @@ func NewConfig(opts ...ConfigOption) Config {
 			port:     os.Getenv("DB_PORT"),
 			name:     os.Getenv("DB_NAME"),
 		},
-		oidc: OIDCConfig{
-			redirectUri:  os.Getenv("OIDC_REDIRECT_URI"),
-			clientId:     os.Getenv("OIDC_CLIENT_ID"),
-			clientSecret: os.Getenv("OIDC_CLIENT_SECRET"),
-			tokenUrl:     os.Getenv("OIDC_TOKEN_URL"),
-			pubkey:       pubkey,
+		OIDC: OIDCConfig{
+			RedirectUri:  os.Getenv("OIDC_REDIRECT_URI"),
+			ClientId:     os.Getenv("OIDC_CLIENT_ID"),
+			ClientSecret: os.Getenv("OIDC_CLIENT_SECRET"),
+			TokenUrl:     os.Getenv("OIDC_TOKEN_URL"),
+			Pubkey:       pubkey,
 		},
-		frontEndURL: os.Getenv("FRONTEND_URL"),
+		FrontEndURL: os.Getenv("FRONTEND_URL"),
 	}
 	for _, opt := range opts {
 		conf = opt(conf)
@@ -70,7 +70,7 @@ func WithDBName(name string) func(Config) Config {
 }
 func WithPubKey(pubKey string) func(Config) Config {
 	return func(conf Config) Config {
-		conf.oidc.pubkey = pubKey
+		conf.OIDC.Pubkey = pubKey
 		return conf
 	}
 }
