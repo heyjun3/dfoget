@@ -13,6 +13,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	cfg "github.com/heyjun3/dforget/backend/config"
 	chatv1 "github.com/heyjun3/dforget/backend/gen/api/chat/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	model "github.com/heyjun3/dforget/backend/infra/chat"
@@ -22,7 +23,7 @@ import (
 )
 
 func newTestServer() (*httptest.Server, *bun.DB, func()) {
-	conf := server.NewConfig(server.WithDBName("test"), server.WithPubKey(test.PublicKey))
+	conf := cfg.NewConfig(cfg.WithDBName("test"), cfg.WithPubKey(test.PublicKey))
 	bundb := server.InitDBConn(conf)
 	mux := presentation.NewServer(conf)
 	srv := httptest.NewServer(h2c.NewHandler(mux, &http2.Server{}))

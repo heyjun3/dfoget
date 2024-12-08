@@ -4,24 +4,23 @@
 //go:build !wireinject
 // +build !wireinject
 
-package presentation
+package auth
 
 import (
 	"github.com/heyjun3/dforget/backend/config"
-	"github.com/heyjun3/dforget/backend/presentation/auth"
 	"net/http"
 )
 
 // Injectors from wire.go:
 
-func InitializeOIDCHandler(conf server.Config) *auth.OIDCHandler {
+func InitializeOIDCHandler(conf server.Config) *OIDCHandler {
 	httpClient := provideHttpClient()
-	oidcHandler := auth.NewOIDCHandler(conf, httpClient)
+	oidcHandler := NewOIDCHandler(conf, httpClient)
 	return oidcHandler
 }
 
 // wire.go:
 
-func provideHttpClient() auth.HttpClient {
+func provideHttpClient() HttpClient {
 	return &http.Client{}
 }
