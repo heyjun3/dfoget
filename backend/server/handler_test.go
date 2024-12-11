@@ -17,6 +17,7 @@ import (
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 	"github.com/heyjun3/dforget/backend/server"
 	"github.com/heyjun3/dforget/backend/test"
+	"github.com/heyjun3/dforget/backend/config"
 )
 
 func TestMemoHandler(t *testing.T) {
