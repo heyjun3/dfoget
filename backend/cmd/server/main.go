@@ -7,12 +7,13 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	cfg "github.com/heyjun3/dforget/backend/config"
 	"github.com/heyjun3/dforget/backend/server"
 	"github.com/rs/cors"
 )
 
 func main() {
-	mux := server.New(server.NewConfig())
+	mux := server.New(cfg.NewConfig())
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:3000", "https://*.trycloudflare.com"},

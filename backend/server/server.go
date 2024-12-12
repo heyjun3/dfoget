@@ -7,6 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 
+	cfg "github.com/heyjun3/dforget/backend/config"
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 	"github.com/heyjun3/dforget/backend/presentation/chat"
@@ -22,7 +23,7 @@ func loggerMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func New(conf Config) *http.ServeMux {
+func New(conf cfg.Config) *http.ServeMux {
 	mux := http.NewServeMux()
 	db := InitDBConn(conf)
 	interceptors := connect.WithInterceptors(NewAuthInterceptorV2(conf))

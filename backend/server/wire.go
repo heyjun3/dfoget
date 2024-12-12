@@ -14,6 +14,7 @@ import (
 	"github.com/uptrace/bun/driver/pgdriver"
 
 	memoapp "github.com/heyjun3/dforget/backend/app/memo"
+	cfg "github.com/heyjun3/dforget/backend/config"
 	"github.com/heyjun3/dforget/backend/domain/memo"
 )
 
@@ -29,7 +30,7 @@ func InitializeMemoHandler(db *bun.DB) *MemoHandler {
 	return nil
 }
 
-func InitializeOIDCHandler(conf Config) *OIDCHandler {
+func InitializeOIDCHandler(conf cfg.Config) *OIDCHandler {
 	wire.Build(
 		provideHttpClient,
 		NewOIDCHandler,

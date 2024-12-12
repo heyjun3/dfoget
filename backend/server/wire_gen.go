@@ -9,6 +9,7 @@ package server
 import (
 	"database/sql"
 	memo2 "github.com/heyjun3/dforget/backend/app/memo"
+	"github.com/heyjun3/dforget/backend/config"
 	"github.com/heyjun3/dforget/backend/domain/memo"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -26,7 +27,7 @@ func InitializeMemoHandler(db *bun.DB) *MemoHandler {
 	return memoHandler
 }
 
-func InitializeOIDCHandler(conf Config) *OIDCHandler {
+func InitializeOIDCHandler(conf server.Config) *OIDCHandler {
 	serverHttpClient := provideHttpClient()
 	oidcHandler := NewOIDCHandler(conf, serverHttpClient)
 	return oidcHandler

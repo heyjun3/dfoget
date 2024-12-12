@@ -14,6 +14,7 @@ import (
 
 	"connectrpc.com/connect"
 	memoapp "github.com/heyjun3/dforget/backend/app/memo"
+	cfg "github.com/heyjun3/dforget/backend/config"
 	"github.com/heyjun3/dforget/backend/domain/memo"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
 	memov1connect "github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
@@ -171,7 +172,7 @@ func (h MemoHandler) MemoStream(ctx context.Context,
 }
 
 type OIDCHandler struct {
-	conf       Config
+	conf       cfg.Config
 	httpClient httpClient
 }
 
@@ -179,7 +180,7 @@ type httpClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-func NewOIDCHandler(conf Config, client httpClient) *OIDCHandler {
+func NewOIDCHandler(conf cfg.Config, client httpClient) *OIDCHandler {
 	return &OIDCHandler{
 		conf:       conf,
 		httpClient: client,
@@ -198,11 +199,11 @@ func (h OIDCHandler) RecieveRedirect(w http.ResponseWriter, r *http.Request) {
 	formData := url.Values{
 		"grant_type":    {"authorization_code"},
 		"code":          {code},
-		"redirect_uri":  {h.conf.oidc.redirectUri},
-		"client_id":     {h.conf.oidc.clientId},
-		"client_secret": {h.conf.oidc.clientSecret},
+		"redirect_uri":  {h.conf.OIDC.RedirectUri},
+		"client_id":     {h.conf.OIDC.ClientId},
+		"client_secret": {h.conf.OIDC.ClientSecret},
 	}
-	req, err := http.NewRequest("POST", h.conf.oidc.tokenUrl, strings.NewReader(formData.Encode()))
+	req, err := http.NewRequest("POST", h.conf.OIDC.TokenUrl, strings.NewReader(formData.Encode()))
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		w.WriteHeader(http.StatusBadRequest)
@@ -239,7 +240,7 @@ func (h OIDCHandler) RecieveRedirect(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 
 	slog.InfoContext(ctx, "oidc verified")
-	http.Redirect(w, r, h.conf.frontEndURL, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, h.conf.FrontEndURL, http.StatusTemporaryRedirect)
 }
 
 type OIDCToken struct {

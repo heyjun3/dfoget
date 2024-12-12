@@ -13,17 +13,17 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	cfg "github.com/heyjun3/dforget/backend/config"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
 	"github.com/heyjun3/dforget/backend/server"
 	"github.com/heyjun3/dforget/backend/test"
-	"github.com/heyjun3/dforget/backend/config"
 )
 
 func TestMemoHandler(t *testing.T) {
-	conf := server.NewConfig(
-		server.WithDBName("test"),
-		server.WithPubKey(test.PublicKey),
+	conf := cfg.NewConfig(
+		cfg.WithDBName("test"),
+		cfg.WithPubKey(test.PublicKey),
 	)
 	test.ResetModel(server.InitDBConn(conf))
 	mux := server.New(conf)
