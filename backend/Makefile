@@ -24,7 +24,7 @@ test: fmt
 	go test ./...
 
 gen-wire:
-	wire gen ./server
+	wire gen ./...
 
 gen-db-schema:
 	go run cmd/schema/main.go

@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"os"
 
-	"github.com/heyjun3/dforget/backend/infra/chat"
-	"github.com/heyjun3/dforget/backend/server"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
+
+	"github.com/heyjun3/dforget/backend/infra/chat"
+	"github.com/heyjun3/dforget/backend/infra/memo"
+	"github.com/heyjun3/dforget/backend/lib/database"
 )
 
 func ptr[T any](t T) *T {
@@ -20,12 +22,12 @@ func main() {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
 
-	models := []server.Models{
-		{Model: &server.MemoDM{}, Fkey: nil},
+	models := []database.Models{
+		{Model: &memo.MemoDM{}, Fkey: nil},
 		{Model: &chat.RoomDM{}, Fkey: nil},
 		{Model: &chat.MessageDM{}, Fkey: ptr(`("room_id") REFERENCES "rooms" ("id") ON DELETE CASCADE`)},
 	}
-	query := server.ModelsToBytes(db, models)
+	query := database.ModelsToBytes(db, models)
 	f, err := os.Create("./schema.sql")
 	if err != nil {
 		panic(err)

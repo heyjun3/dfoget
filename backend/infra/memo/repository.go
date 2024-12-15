@@ -1,4 +1,4 @@
-package server
+package memo
 
 import (
 	"context"

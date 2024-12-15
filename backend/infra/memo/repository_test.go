@@ -1,4 +1,4 @@
-package server_test
+package memo_test
 
 import (
 	"context"
@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/heyjun3/dforget/backend/domain/memo"
-	"github.com/heyjun3/dforget/backend/lib"
-	"github.com/heyjun3/dforget/backend/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/uptrace/bun"
+
+	"github.com/heyjun3/dforget/backend/domain/memo"
+	memodm "github.com/heyjun3/dforget/backend/infra/memo"
+	"github.com/heyjun3/dforget/backend/lib"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
 )
@@ -19,9 +20,9 @@ func TestMemoRepository(t *testing.T) {
 	dsn := "postgres://dev:dev@postgres:5432/test?sslmode=disable"
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
-	repo := server.NewMemoRepository(db)
+	repo := memodm.NewMemoRepository(db)
 	db.NewTruncateTable().
-		Model((*server.MemoDM)(nil)).Exec(context.Background())
+		Model((*memodm.MemoDM)(nil)).Exec(context.Background())
 
 	t.Run("save, find, and delete memo", func(t *testing.T) {
 		id, _ := uuid.NewV7()

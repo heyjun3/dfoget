@@ -17,14 +17,14 @@ import (
 	chatv1 "github.com/heyjun3/dforget/backend/gen/api/chat/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	model "github.com/heyjun3/dforget/backend/infra/chat"
+	"github.com/heyjun3/dforget/backend/lib/database"
 	"github.com/heyjun3/dforget/backend/presentation"
-	"github.com/heyjun3/dforget/backend/server"
 	"github.com/heyjun3/dforget/backend/test"
 )
 
 func newTestServer() (*httptest.Server, *bun.DB, func()) {
 	conf := cfg.NewConfig(cfg.WithDBName("test"), cfg.WithPubKey(test.PublicKey))
-	bundb := server.InitDBConn(conf)
+	bundb := database.InitDBConn(conf)
 	mux := presentation.NewServer(conf)
 	srv := httptest.NewServer(h2c.NewHandler(mux, &http2.Server{}))
 	return srv, bundb, func() {

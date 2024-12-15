@@ -16,8 +16,9 @@ import (
 	cfg "github.com/heyjun3/dforget/backend/config"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
+	"github.com/heyjun3/dforget/backend/lib"
+	"github.com/heyjun3/dforget/backend/lib/database"
 	"github.com/heyjun3/dforget/backend/presentation"
-	"github.com/heyjun3/dforget/backend/server"
 	"github.com/heyjun3/dforget/backend/test"
 )
 
@@ -26,7 +27,7 @@ func TestMemoHandler(t *testing.T) {
 		cfg.WithDBName("test"),
 		cfg.WithPubKey(test.PublicKey),
 	)
-	test.ResetModel(server.InitDBConn(conf))
+	test.ResetModel(database.InitDBConn(conf))
 	mux := presentation.NewServer(conf)
 	srv := httptest.NewServer(h2c.NewHandler(mux, &http2.Server{}))
 	defer srv.Close()
@@ -98,7 +99,7 @@ func TestMemoHandler(t *testing.T) {
 		res, err := client.RegisterMemo(context.Background(),
 			connect.NewRequest(&memov1.RegisterMemoRequest{
 				Memo: &memov1.Memo{
-					Id:    server.Ptr(id),
+					Id:    lib.Ptr(id),
 					Title: "test",
 					Text:  "test",
 				},

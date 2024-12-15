@@ -13,8 +13,8 @@ import (
 	"github.com/heyjun3/dforget/backend/domain/memo"
 	memov1 "github.com/heyjun3/dforget/backend/gen/api/memo/v1"
 	memov1connect "github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
+	memodm "github.com/heyjun3/dforget/backend/infra/memo"
 	"github.com/heyjun3/dforget/backend/lib"
-	"github.com/heyjun3/dforget/backend/server"
 )
 
 func Ptr[T any](v T) *T {
@@ -38,7 +38,7 @@ func NewMemov1Memos(memos []*memo.Memo) []*memov1.Memo {
 	return dto
 }
 
-func NewMemoHandler(memoRepository *server.MemoRepository,
+func NewMemoHandler(memoRepository *memodm.MemoRepository,
 	registerMemoService *memo.RegisterMemoService,
 	memoUsecase *memoapp.MemoUsecase,
 ) *MemoHandler {
@@ -50,7 +50,7 @@ func NewMemoHandler(memoRepository *server.MemoRepository,
 }
 
 type MemoHandler struct {
-	memoRepository      *server.MemoRepository
+	memoRepository      *memodm.MemoRepository
 	registerMemoService *memo.RegisterMemoService
 	memoUsecase         *memoapp.MemoUsecase
 }

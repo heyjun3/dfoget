@@ -10,9 +10,10 @@ import (
 	cfg "github.com/heyjun3/dforget/backend/config"
 	"github.com/heyjun3/dforget/backend/gen/api/chat/v1/chatv1connect"
 	"github.com/heyjun3/dforget/backend/gen/api/memo/v1/memov1connect"
+	"github.com/heyjun3/dforget/backend/lib/database"
 	"github.com/heyjun3/dforget/backend/presentation/auth"
 	"github.com/heyjun3/dforget/backend/presentation/chat"
-	"github.com/heyjun3/dforget/backend/server"
+	"github.com/heyjun3/dforget/backend/presentation/memo"
 )
 
 func loggerMiddleware(next http.Handler) http.Handler {
@@ -27,10 +28,10 @@ func loggerMiddleware(next http.Handler) http.Handler {
 
 func NewServer(conf cfg.Config) *http.ServeMux {
 	mux := http.NewServeMux()
-	db := server.InitDBConn(conf)
+	db := database.InitDBConn(conf)
 	interceptors := connect.WithInterceptors(auth.NewAuthInterceptorV2(conf))
 
-	memo := server.InitializeMemoHandler(db)
+	memo := memo.InitializeMemoHandler(db)
 	path, handler := memov1connect.NewMemoServiceHandler(memo, interceptors)
 	mux.Handle(path, loggerMiddleware(handler))
 

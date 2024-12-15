@@ -11,8 +11,10 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/heyjun3/dforget/backend/server"
 	"github.com/uptrace/bun"
+
+	"github.com/heyjun3/dforget/backend/infra/memo"
+	"github.com/heyjun3/dforget/backend/presentation/auth"
 )
 
 var cookie string
@@ -30,7 +32,7 @@ func init() {
 
 func ResetModel(db *bun.DB) {
 	models := []interface{}{
-		server.MemoDM{},
+		memo.MemoDM{},
 	}
 	for _, model := range models {
 		db.NewTruncateTable().Model(&model).Exec(context.Background())
@@ -122,7 +124,7 @@ func NewSetCookieInterceptor() connect.UnaryInterceptorFunc {
 			req connect.AnyRequest,
 		) (connect.AnyResponse, error) {
 			if req.Spec().IsClient {
-				req.Header().Set("Cookie", fmt.Sprintf("%s=%s", server.AuthCookieName, cookie))
+				req.Header().Set("Cookie", fmt.Sprintf("%s=%s", auth.AuthCookieName, cookie))
 			}
 			return next(ctx, req)
 		})
